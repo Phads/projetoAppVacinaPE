@@ -1,22 +1,18 @@
 import { TextInput, TextInputAndroidProps } from "react-native";
 import { styles } from "./styles";
 
-export function Input({...rest}: TextInputAndroidProps) {
+type titleInput = TextInputAndroidProps & {
+    modInput: string
+}
+
+export function Input({modInput, ...rest}: titleInput) {
     return (
         <TextInput 
         style={styles.input}
-        placeholder="Identificação do usuário"
+        placeholder={modInput}
+        keyboardType="default"
         {...rest} 
         />
     )
 }
-
-export function InputPassword({...rest}: TextInputAndroidProps) {
-    return (
-        <TextInput 
-        style={styles.input}
-        placeholder="Senha do usuário"
-        {...rest} 
-        />
-    )
-}   
+ 
