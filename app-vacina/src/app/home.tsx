@@ -8,6 +8,7 @@ import {
   TextInput,  
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function NovoAtendimento() {
   return (
@@ -50,7 +51,7 @@ export default function NovoAtendimento() {
         />
         
 
-        <TouchableOpacity style={styles.searchButton} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.searchButton} activeOpacity={0.8} onPress={() => router.navigate('/carteira_vacinacao')}>
           <Text style={styles.searchButtonText}>Buscar Paciente</Text>
         </TouchableOpacity>
 
