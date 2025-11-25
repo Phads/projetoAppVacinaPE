@@ -1,18 +1,25 @@
 import React from "react";
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar
 } from "react-native";
+import { globalStyle } from "../../constants/globalStyles";
 
 export default function CarteiraVacinacao() {
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-
-      {/* Header */}
-      <Text style={styles.headerTitle}>Carteira de Vacinação Digital</Text>
+    <ScrollView contentContainerStyle={globalStyle.container}>
+      <StatusBar
+        barStyle={"light-content"}
+        backgroundColor={"#0a76e9ff"}
+        translucent={false}
+      />
+      <View style={globalStyle.header}>
+        <Text style={globalStyle.headerTitle}>Carteira de Vacinação Digital</Text>
+      </View>
 
       {/* HISTÓRICO - Nome */}
       <Text style={styles.sectionTitle}>Histórico de PEDRO</Text>

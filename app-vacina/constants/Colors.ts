@@ -16,4 +16,20 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorDark,
   },
+
+  container: {
+    padding: 24,
+    paddingBotton: 40,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+    marginTop: 10,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#374151',
+    marginLeft: 10,
+  },
 };
