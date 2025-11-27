@@ -72,7 +72,7 @@ export default function ConfirmarDadosScreen() {
                 Os dados do paciente estão corretos?
             </Text>
 
-            <TouchableOpacity style={[globalStyle.button, styles.btnConfirm ]} activeOpacity={0.8}>
+            <TouchableOpacity style={[globalStyle.button, styles.btnConfirm ]} activeOpacity={0.8} onPress={() => router.push('/carteira_vacinacao')}>
                 <Text style={styles.btnConfirmText}>Confirmar Dados e Avançar</Text>
             </TouchableOpacity>
 
