@@ -87,7 +87,7 @@ export default function CarteiraVacinacao() {
       </View>
 
       {/* Botão inferior */}
-      <TouchableOpacity style={styles.buttonAplicar}>
+      <TouchableOpacity style={styles.buttonAplicar} activeOpacity={0.7}>
         <Text style={styles.buttonAplicarText}>Selecionar Vacina para Aplicação</Text>
       </TouchableOpacity>
 

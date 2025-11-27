@@ -8,21 +8,25 @@ import {
   TextInput,
   StatusBar,
 } from 'react-native';
-import {globalStyle} from '../../constants/globalStyles'
+import { globalStyle } from '../../constants/globalStyles'
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 export default function NovoAtendimentoScreen() {
 
   const onPressResumo = () => {
-    return router.navigate('/resumo');
+    return router.push('/resumo');
   }
 
   return (
     <ScrollView contentContainerStyle={globalStyle.container}>
-
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Início / Novo Atendimento</Text>
+      <StatusBar
+        barStyle={"light-content"}
+        backgroundColor={"#0a76e9ff"}
+        translucent={false}
+      />
+      <View style={globalStyle.header}>
+        <Text style={globalStyle.headerTitle}>Início / Novo Atendimento</Text>
       </View>
 
       <View style={styles.profCard}>
@@ -51,7 +55,7 @@ export default function NovoAtendimentoScreen() {
       <Text style={styles.sectionTitle}>Busca Manual</Text>
 
       <TextInput
-        style={styles.input}
+        style={globalStyle.input}
         placeholder="Digitar número do SUS ou CPF"
         placeholderTextColor="#9CA3AF"
         keyboardType="numeric"
@@ -74,19 +78,6 @@ export default function NovoAtendimentoScreen() {
 }
 
 const styles = StyleSheet.create({
-  
-
-  header: {
-    alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 10,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#374151',
-    marginLeft: 10,
-  },
 
   profCard: {
     backgroundColor: '#2563EB',
@@ -161,18 +152,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginTop: 8,
   },
-  input: {
-    width: "100%",
-    height: 60,
-    borderColor: "#cccccc",
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingLeft: 15,
-    marginBottom: 20,
-    fontSize: 16,
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-  },
+
   searchButton: {
     width: "80%",
     alignSelf: "center",

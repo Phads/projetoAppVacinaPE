@@ -1,15 +1,18 @@
 import React from "react"
-import { 
-    View, 
-    Text, 
-    StyleSheet, 
-    Alert, 
-    TextInput, 
-    TouchableOpacity, 
-    Image, 
-    KeyboardAvoidingView, 
-    Platform } from "react-native"
+import {
+    View,
+    Text,
+    StyleSheet,
+    Alert,
+    TextInput,
+    TouchableOpacity,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+} from "react-native"
 import { router } from "expo-router"
+import { globalStyle } from "../../constants/globalStyles"
 
 export default function Login() {
 
@@ -24,7 +27,7 @@ export default function Login() {
 
         router.replace("/home");
     }
-
+    
     function handleClickLinkForgotPassword() {
         Alert.alert("Redefinir senha")
     }
@@ -32,10 +35,10 @@ export default function Login() {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.container}
+            style={globalStyle.container}
             keyboardVerticalOffset={64}
         >
-            <View style={styles.container}>
+            <View style={globalStyle.container}>
                 <View style={styles.img}>
                     <Image source={require("../../assets/images/governo-logo.png")} />
                 </View>
@@ -46,24 +49,24 @@ export default function Login() {
 
                 <View style={{ width: "100%", alignItems: "center", marginTop: 40, marginBottom: 20, gap: 15 }}>
                     <Text style={styles.label}>Email</Text>
-                    <TextInput 
-                        style={styles.input} 
-                        placeholder="Digite seu email" 
+                    <TextInput
+                        style={globalStyle.input}
+                        placeholder="Digite seu email"
                         onChangeText={value => setEmail(value)}
-                        keyboardType="email-address" 
+                        keyboardType="email-address"
                     />
-                    
+
                     <Text style={styles.label}>Senha</Text>
-                    <TextInput 
-                        style={styles.input} 
-                        placeholder="Digite sua senha" 
+                    <TextInput
+                        style={globalStyle.input}
+                        placeholder="Digite sua senha"
                         onChangeText={value => setPassword(value)}
-                        secureTextEntry={true} 
+                        secureTextEntry={true}
                     />
                 </View>
 
                 <View style={{ width: "100%" }}>
-                    <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={submitLogin}>
+                    <TouchableOpacity activeOpacity={0.7} style={globalStyle.button} onPress={submitLogin}>
                         <Text style={styles.text}>Entrar</Text>
                     </TouchableOpacity>
                     <TouchableOpacity activeOpacity={0.7} style={styles.link} onPress={handleClickLinkForgotPassword}>
@@ -77,32 +80,24 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
     img: {
         width: 300,
         height: 250,
         justifyContent: "center",
         alignItems: "center",
     },
-
     title: {
         fontSize: 30,
         fontWeight: "bold",
         marginBottom: 10,
         textAlign: "center",
         color: "#0a76e9ff",
-        
+
     },
     titleMessage: {
         fontSize: 16,
-    }, 
-    
+    },
+
     text: {
         color: "#ffffff",
         fontSize: 18,
@@ -112,37 +107,22 @@ const styles = StyleSheet.create({
     },
 
     label: {
+        width: '100%',
         height: 20,
         alignSelf: "flex-start",
-        marginLeft: 10,
         fontSize: 16,
         fontWeight: "bold",
     },
-
-    input: {
-        width: 370,
-        height: 60,
-        borderColor: "#bbb7b7ff",
-        backgroundColor: "#f5f5f5ff",
-        borderWidth: 1,
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        paddingLeft: 15,
-        marginBottom: 10,
-        fontSize: 16,
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-    },
-
-    button: {
-        width: 300,
-        height: 60,
-        backgroundColor: "#007bff",
-        borderRadius: 10,
-        justifyContent: "center",
-        alignSelf: "center",
-        alignItems: "center",
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-    },
+    // button: {
+    //     width: 300,
+    //     height: 60,
+    //     backgroundColor: "#007bff",
+    //     borderRadius: 10,
+    //     justifyContent: "center",
+    //     alignSelf: "center",
+    //     alignItems: "center",
+    //     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+    // },
 
     link: {
         color: "#007bff",

@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 export default function ResumoScreen() {
 
     const onPressNovoPaciente = () => {
-        return router.back();
+        return router.push('/home');
       }
 
     return (
