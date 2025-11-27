@@ -96,19 +96,6 @@ export default function CarteiraVacinacao() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    paddingBottom: 40,
-    backgroundColor: "#FFFFFF",
-  },
-
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1F2937",
-    marginBottom: 20,
-  },
-
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",

@@ -64,14 +64,6 @@ export default function ResumoScreen() {
 
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#F5F7FA',
-    },
-    container: {
-        padding: 20,
-        paddingBottom: 40, 
-    },
     headerText: {
         fontSize: 20,
         fontWeight: 'bold',

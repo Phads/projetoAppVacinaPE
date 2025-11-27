@@ -18,6 +18,10 @@ export default function NovoAtendimentoScreen() {
     return router.push('/resumo');
   }
 
+  const onPressBuscarPaciente = () => {
+    return router.push('/dados_paciente')
+  }
+
   return (
     <ScrollView contentContainerStyle={globalStyle.container}>
       <StatusBar
@@ -62,7 +66,7 @@ export default function NovoAtendimentoScreen() {
       />
 
 
-      <TouchableOpacity style={styles.searchButton} activeOpacity={0.8} onPress={() => router.navigate('/carteira_vacinacao')}>
+      <TouchableOpacity style={styles.searchButton} activeOpacity={0.8} onPress={() => router.navigate('/dados_paciente')}>
         <Text style={styles.searchButtonText}>Buscar Paciente</Text>
       </TouchableOpacity>
 

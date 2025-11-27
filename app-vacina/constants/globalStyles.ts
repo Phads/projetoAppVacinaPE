@@ -2,14 +2,15 @@ import { StyleSheet } from "react-native";
 
 export const globalStyle = StyleSheet.create({
     container: {
+        flex: 1,
         padding: 24,
-        paddingBottom: 50,
-        backgroundColor: '#ffffff'
+        paddingBottom: 20,
+        backgroundColor: '#ffff'
     },
     header: {
         alignItems: 'center',
         marginBottom: 24,
-        marginTop: 10,
+        marginTop: 30,
     },
     headerTitle: {
         fontSize: 18,
@@ -17,7 +18,6 @@ export const globalStyle = StyleSheet.create({
         color: '#374151',
         marginLeft: 10,
     },
-
     input: {
         width: 370,
         height: 60,
