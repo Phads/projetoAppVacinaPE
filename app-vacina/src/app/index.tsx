@@ -9,7 +9,6 @@ import {
     Image,
     KeyboardAvoidingView,
     Platform,
-    Pressable,
 } from "react-native"
 import { router } from "expo-router"
 import { globalStyle } from "../../constants/globalStyles"

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   View,
   Text,
@@ -8,7 +7,7 @@ import {
   TextInput,
   StatusBar,
 } from 'react-native';
-import { globalStyle } from '../../constants/globalStyles'
+import { globalStyle } from '../../constants/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -16,10 +15,6 @@ export default function NovoAtendimentoScreen() {
 
   const onPressResumo = () => {
     return router.push('/resumo');
-  }
-
-  const onPressBuscarPaciente = () => {
-    return router.push('/dados_paciente')
   }
 
   return (
@@ -47,7 +42,7 @@ export default function NovoAtendimentoScreen() {
 
       <Text style={styles.sectionTitle}>Identificação Rápida</Text>
 
-      <TouchableOpacity style={styles.scanCard} activeOpacity={0.8}>
+      <TouchableOpacity style={styles.scanCard} activeOpacity={0.8} onPress={() => router.navigate('/ler_qrcode')}>
         <Text style={styles.scanTitle}>Iniciar Leitura do Cartão SUS</Text>
         <Text style={styles.scanSubtitle}>Mais rápido e com menos erros.</Text>
 
