@@ -14,7 +14,7 @@ import { router } from 'expo-router';
 export default function NovoAtendimentoScreen() {
 
   const onPressResumo = () => {
-    return router.push('/resumo');
+    return router.push('./resumo');
   }
 
   return (
@@ -42,7 +42,7 @@ export default function NovoAtendimentoScreen() {
 
       <Text style={styles.sectionTitle}>Identificação Rápida</Text>
 
-      <TouchableOpacity style={styles.scanCard} activeOpacity={0.8} onPress={() => router.navigate('/ler_qrcode')}>
+      <TouchableOpacity style={styles.scanCard} activeOpacity={0.8} onPress={() => router.navigate('./ler_qrcode')}>
         <Text style={styles.scanTitle}>Iniciar Leitura do Cartão SUS</Text>
         <Text style={styles.scanSubtitle}>Mais rápido e com menos erros.</Text>
 
@@ -61,7 +61,7 @@ export default function NovoAtendimentoScreen() {
       />
 
 
-      <TouchableOpacity style={styles.searchButton} activeOpacity={0.8} onPress={() => router.navigate('/dados_paciente')}>
+      <TouchableOpacity style={styles.searchButton} activeOpacity={0.8} onPress={() => router.navigate('./dados_paciente')}>
         <Text style={styles.searchButtonText}>Buscar Paciente</Text>
       </TouchableOpacity>
 

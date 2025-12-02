@@ -8,6 +8,7 @@ import {
   StatusBar
 } from "react-native";
 import { globalStyle } from "../../constants/globalStyles";
+import { router } from "expo-router";
 
 export default function CarteiraVacinacao() {
   return (
@@ -87,8 +88,8 @@ export default function CarteiraVacinacao() {
       </View>
 
       {/* Botão inferior */}
-      <TouchableOpacity style={styles.buttonAplicar} activeOpacity={0.7}>
-        <Text style={styles.buttonAplicarText}>Selecionar Vacina para Aplicação</Text>
+      <TouchableOpacity style={[globalStyle.button, styles.btnConfirm ]} activeOpacity={0.8} onPress={() => router.push('./selecao_vacina')}>
+                <Text style={styles.btnConfirmText}>Confirmar Dados e Avançar</Text>
       </TouchableOpacity>
 
     </ScrollView>
@@ -198,17 +199,27 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  /* Botão inferior */
-  buttonAplicar: {
-    backgroundColor: "#2563EB",
-    borderRadius: 10,
-    marginTop: 10,
-    padding: 16,
-    alignItems: "center",
-  },
-  buttonAplicarText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  }
+    btnConfirm: {
+        paddingVertical: 14,
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    btnConfirmText: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    btnOutline: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#16A34A', // Verde
+        borderRadius: 8,
+        paddingVertical: 14,
+        alignItems: 'center',
+    },
+    btnOutlineText: {
+        color: '#16A34A', // Texto Verde
+        fontWeight: 'bold',
+        fontSize: 16,
+    }
 });
