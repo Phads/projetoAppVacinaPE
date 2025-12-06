@@ -15,6 +15,7 @@ import { Picker } from "@react-native-picker/picker"
 import React, { useState, useEffect } from "react"
 import { globalStyle } from "../../constants/globalStyles"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from "expo-router";
 
 export default function FormRegistrarDoseAplicada() {
 
@@ -33,7 +34,6 @@ export default function FormRegistrarDoseAplicada() {
     }, []);
 
     return (
-        // Wrapper principal flex: 1 é essencial
         <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
             <StatusBar
                 barStyle={"light-content"}
@@ -41,11 +41,6 @@ export default function FormRegistrarDoseAplicada() {
                 translucent={false}
             />
 
-            {/* ESTRATÉGIA BLINDADA:
-               1. O KeyboardAvoidingView envolve TUDO abaixo da StatusBar.
-               2. No Android, usamos 'undefined' ou 'height'. Se seu app.json estiver como 'resize', 
-                  usar 'padding' no Android quebra tudo. Vamos tentar deixar o OS lidar com isso no Android.
-            */}
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -165,7 +160,7 @@ export default function FormRegistrarDoseAplicada() {
                                 </View>
                             </View>
 
-                            <TouchableOpacity style={globalStyle.button} activeOpacity={0.8}>
+                            <TouchableOpacity style={globalStyle.button} activeOpacity={0.8} onPress={() => router.navigate('/revisao')}>
                                 <Text style={styles.buttonText}>Confirmar e avançar</Text>
                             </TouchableOpacity>
 
