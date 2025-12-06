@@ -4,13 +4,13 @@ export const globalStyle = StyleSheet.create({
     container: {
         flex: 1,
         padding: 24,
-        marginBottom: 50,
+        marginBottom: 40,
         backgroundColor: '#ffff'
     },
     header: {
         alignItems: 'center',
         marginBottom: 24,
-        marginTop: 30,
+        marginTop: 5,
     },
     headerTitle: {
         fontSize: 18,
