@@ -9,6 +9,7 @@ import {
   Platform,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router } from "expo-router";
 
 // Simulando os dados que viriam via props/route
 const dadosMock = {
@@ -180,7 +181,7 @@ export default function TelaRevisaoFinalizacao() {
         <TouchableOpacity 
             style={[styles.button, !isChecked && styles.buttonDisabled]} 
             activeOpacity={0.8}
-            onPress={handleRegistrar}
+            onPress={() => router.navigate('./confirmacao_registro')}
             disabled={!isChecked}
         >
           <Text style={styles.buttonText}>REGISTRAR APLICAÇÃO</Text>
