@@ -13,7 +13,7 @@ import {
 } from "react-native"
 import { router } from "expo-router"
 import { globalStyle } from "../../constants/globalStyles"
-import { login } from "../../backend/src/service/api.js"
+import { login } from "../services/api"
 
 export default function Login() {
   const [email, setEmail] = React.useState("")
@@ -52,7 +52,7 @@ export default function Login() {
       style={globalStyle.container}
       keyboardVerticalOffset={64}
     >
-      <View style={globalStyle.container}>
+      <View>
         <View style={styles.img}>
           <Image source={require("../../assets/images/governo-logo.png")} />
         </View>
@@ -62,7 +62,7 @@ export default function Login() {
           Faça login no Sistema - Vacina+ PE
         </Text>
 
-        <View style={{ width: "100%", marginTop: 40, gap: 15 }}>
+        <View style={{ width: "100%", marginTop: 40, marginRight: 32}}>
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={globalStyle.input}
@@ -82,7 +82,7 @@ export default function Login() {
         </View>
 
         <TouchableOpacity
-          style={globalStyle.button}
+          style={[globalStyle.button, styles.buttonEntrar]}
           onPress={submitLogin}
           disabled={loading}
         >
@@ -115,12 +115,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         textAlign: "center",
         color: "#0a76e9ff",
-
     },
     titleMessage: {
         fontSize: 16,
     },
-
     text: {
         color: "#ffffff",
         fontSize: 18,
@@ -128,32 +126,26 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-
     label: {
         width: '100%',
         height: 20,
         alignSelf: "flex-start",
         fontSize: 16,
         fontWeight: "bold",
+        marginTop: 10,
+        marginBottom: 5,
     },
-    // button: {
-    //     width: 300,
-    //     height: 60,
-    //     backgroundColor: "#007bff",
-    //     borderRadius: 10,
-    //     justifyContent: "center",
-    //     alignSelf: "center",
-    //     alignItems: "center",
-    //     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-    // },
-
+    buttonEntrar: {
+      marginTop: 30,
+    },
     link: {
         color: "#007bff",
         fontSize: 16,
         textDecorationLine: "underline",
-        marginTop: 10,
+        marginTop: 20,
         justifyContent: "center",
         alignItems: "center",
+        alignSelf: "center",
     },
 
 })
