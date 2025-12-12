@@ -13,30 +13,40 @@ import {
 } from "react-native"
 import { router } from "expo-router"
 import { globalStyle } from "../../constants/globalStyles"
-import { login } from "../services/api"
+import { login } from "../services/api" // <--- CORREÇÃO: Importe apenas 'login', o 'api' direto não é necessário aqui
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
   const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
+  const [senha, setSenha] = React.useState("")
   const [loading, setLoading] = React.useState(false)
 
   const submitLogin = async () => {
-    if (!email || !password) {
+    if (!email || !senha) {
       Alert.alert("Erro", "Por favor, preencha todos os campos.")
       return
     }
 
+    setLoading(true)
+
     try {
-      setLoading(true)
+      const dadosResposta = await login(email, senha);
 
-      const profissional = await login(email, password)
+      console.log("RESPOSTA DO LOGIN:", JSON.stringify(dadosResposta, null, 2));
 
-      Alert.alert("Sucesso", `Bem-vindo(a), ${profissional.nome}`)
+      const profissional = dadosResposta.profissional || dadosResposta;
+
+      const usuarioString = JSON.stringify(profissional);
+      await AsyncStorage.setItem('usuario_logado', usuarioString);
+
+      Alert.alert("Sucesso", `Bem-vindo(a), ${profissional.nome || "Usuário"}`)
 
       router.replace("/home")
 
     } catch (error) {
-      Alert.alert("Erro", (error as Error).message)
+      console.error(error);
+      const mensagemErro = "Ocorreu um erro ao fazer login.";
+      Alert.alert("Erro", mensagemErro)
     } finally {
       setLoading(false)
     }
@@ -62,7 +72,7 @@ export default function Login() {
           Faça login no Sistema - Vacina+ PE
         </Text>
 
-        <View style={{ width: "100%", marginTop: 40, marginRight: 32}}>
+        <View style={{ width: "100%", marginTop: 40, marginRight: 32 }}>
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={globalStyle.input}
@@ -76,7 +86,7 @@ export default function Login() {
           <TextInput
             style={globalStyle.input}
             placeholder="Digite sua senha"
-            onChangeText={setPassword}
+            onChangeText={setSenha}
             secureTextEntry
           />
         </View>
@@ -101,51 +111,49 @@ export default function Login() {
   )
 }
 
-
 const styles = StyleSheet.create({
-    img: {
-        width: 300,
-        height: 250,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: "bold",
-        marginBottom: 10,
-        textAlign: "center",
-        color: "#0a76e9ff",
-    },
-    titleMessage: {
-        fontSize: 16,
-    },
-    text: {
-        color: "#ffffff",
-        fontSize: 18,
-        fontWeight: "bold",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    label: {
-        width: '100%',
-        height: 20,
-        alignSelf: "flex-start",
-        fontSize: 16,
-        fontWeight: "bold",
-        marginTop: 10,
-        marginBottom: 5,
-    },
-    buttonEntrar: {
-      marginTop: 30,
-    },
-    link: {
-        color: "#007bff",
-        fontSize: 16,
-        textDecorationLine: "underline",
-        marginTop: 20,
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-    },
-
+  img: {
+    width: 300,
+    height: 250,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+    color: "#0a76e9ff",
+  },
+  titleMessage: {
+    fontSize: 16,
+  },
+  text: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "bold",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: {
+    width: '100%',
+    height: 20,
+    alignSelf: "flex-start",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  buttonEntrar: {
+    marginTop: 30,
+  },
+  link: {
+    color: "#007bff",
+    fontSize: 16,
+    textDecorationLine: "underline",
+    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
 })

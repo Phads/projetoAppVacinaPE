@@ -2,12 +2,35 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, StatusBar } from 
 import { globalStyle } from "../../constants/globalStyles";
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ResumoScreen() {
 
+    const [profissional, setProfissional] = useState<any>(null);
+
+    useEffect(() => {
+        carregarDados();
+    }, []);
+
+    const carregarDados = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('usuario_logado');
+            if (jsonValue !== null) {
+                const dados = JSON.parse(jsonValue);
+                setProfissional(dados);
+            }
+        } catch (e) {
+            console.log("Erro ao recuperar dados. Limpando sessão corrompida.", e);
+
+            await AsyncStorage.removeItem('usuario_logado');
+            setProfissional(null);
+        }
+    };
+
     const onPressNovoPaciente = () => {
         return router.push('/home');
-      }
+    }
 
     return (
         <ScrollView contentContainerStyle={globalStyle.container}>
@@ -21,7 +44,9 @@ export default function ResumoScreen() {
                     Resumo do Plantão
                 </Text>
             </View>
-            <Text style={styles.headerText}>Enf. Ana Cascalho P. Souza</Text>
+            <Text style={styles.headerText}>
+                {profissional ? profissional.nome : "Carregando..."}
+            </Text>
 
             <View style={styles.card}>
                 <View style={styles.greenAccentBar} />
@@ -113,7 +138,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     button: {
-        backgroundColor: '#1E88E5', 
+        backgroundColor: '#1E88E5',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

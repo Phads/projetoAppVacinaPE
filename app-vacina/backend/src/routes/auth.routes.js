@@ -25,7 +25,7 @@ router.post('/login', async (req, res) => {
     id: profissional._id,
     nome: profissional.nome,
     email: profissional.email,
-    cargo: profissional.cargo
+    coren: profissional.coren,
   });
 });
 

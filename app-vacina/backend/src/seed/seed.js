@@ -19,7 +19,8 @@ async function seed() {
       cpf: '12604913402',
       email: 'tavares.italo@outlook.com',
       senha: '123456',
-      unidadeSaude: 'Policlínica Rio Doce IV - Olinda/PE'
+      unidadeSaude: 'Policlínica Rio Doce IV - Olinda/PE',
+      coren: '11122',
     });
 
     // PACIENTE

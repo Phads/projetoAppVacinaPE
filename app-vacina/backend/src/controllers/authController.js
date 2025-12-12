@@ -3,9 +3,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
-  const { cpf, senha } = req.body;
+  const { cpf, email, senha } = req.body; 
 
-  const profissional = await Profissional.findOne({ cpf });
+  const filtro = cpf ? { cpf } : { email };
+  
+  const profissional = await Profissional.findOne(filtro);
+
   if (!profissional) {
     return res.status(401).json({ erro: 'Usuário não encontrado' });
   }
@@ -21,5 +24,15 @@ exports.login = async (req, res) => {
     { expiresIn: '8h' }
   );
 
-  res.json({ token, profissional });
+  res.json({
+    token,
+    profissional: {
+      id: profissional._id,
+      nome: profissional.nome,
+      email: profissional.email,
+      cpf: profissional.cpf,
+      coren: profissional.coren, 
+      cargo: profissional.cargo, 
+    }
+  });
 };

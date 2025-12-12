@@ -10,8 +10,30 @@ import {
 import { globalStyle } from '../../constants/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function NovoAtendimentoScreen() {
+  const [profissional, setProfissional] = useState<any>(null);
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('usuario_logado');
+      if (jsonValue !== null) {
+        const dados = JSON.parse(jsonValue);
+        setProfissional(dados);
+      }
+    } catch (e) {
+      console.log("Erro ao recuperar dados. Limpando sessão corrompida.", e);
+
+      await AsyncStorage.removeItem('usuario_logado');
+      setProfissional(null);
+    }
+  };
 
   const onPressResumo = () => {
     return router.push('./resumo');
@@ -36,8 +58,13 @@ export default function NovoAtendimentoScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.profName}>Enf. Ana Cascalho P. Souza</Text>
-        <Text style={styles.profCoren}>(COREN-PE 123456)</Text>
+        <Text style={styles.profName}>
+          {profissional ? profissional.nome : "Carregando..."}
+        </Text>
+        <Text style={styles.profCoren}>
+
+          {profissional ? profissional.coren : "---"}
+        </Text>
       </View>
 
       <Text style={styles.sectionTitle}>Identificação Rápida</Text>
@@ -60,7 +87,6 @@ export default function NovoAtendimentoScreen() {
         keyboardType="numeric"
       />
 
-
       <TouchableOpacity style={styles.searchButton} activeOpacity={0.8} onPress={() => router.navigate('./dados_paciente')}>
         <Text style={styles.searchButtonText}>Buscar Paciente</Text>
       </TouchableOpacity>
@@ -69,7 +95,8 @@ export default function NovoAtendimentoScreen() {
         <Text style={styles.statusTitle}>Status do Plantão</Text>
         <Text style={styles.statusNumber}>45</Text>
         <Text style={styles.statusLabel}>Pacientes Registrados Hoje</Text>
-        <Text style={styles.statusLabel}>Adicionar funcionalizade de contar pacientes registrados</Text>
+        {/* <--- OBSERVAÇÃO: Lembre-se de implementar a lógica real de contagem depois */}
+        <Text style={styles.statusLabel}>Contagem de pacientes</Text>
       </View>
 
     </ScrollView>
@@ -77,7 +104,6 @@ export default function NovoAtendimentoScreen() {
 }
 
 const styles = StyleSheet.create({
-
   profCard: {
     backgroundColor: '#2563EB',
     borderRadius: 16,
@@ -129,7 +155,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginTop: 8,
   },
-
   scanCard: {
     backgroundColor: '#2563EB',
     borderRadius: 12,
@@ -151,7 +176,6 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginTop: 8,
   },
-
   searchButton: {
     width: "80%",
     alignSelf: "center",
@@ -166,7 +190,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-
   statusCard: {
     backgroundColor: '#E0F2FE',
     borderRadius: 16,

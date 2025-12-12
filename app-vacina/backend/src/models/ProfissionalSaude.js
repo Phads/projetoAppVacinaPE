@@ -6,7 +6,8 @@ const ProfissionalSchema = new mongoose.Schema({
   cpf: { type: String, unique: true },
   email: String,
   senha: String,
-  unidadeSaude: String
+  unidadeSaude: String,
+  coren: {type: String, required: true, trim: true},
 });
 
 ProfissionalSchema.pre('save', async function () {
