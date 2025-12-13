@@ -6,7 +6,7 @@ import { globalStyle } from "../../constants/globalStyles";
 
 export default function LerQrCode() {
     const [permission, requestPermission] = useCameraPermissions();
-    
+
     const qrCodeLock = useRef(false);
 
     useEffect(() => {
@@ -16,9 +16,43 @@ export default function LerQrCode() {
     }, [permission]);
 
     function handleQRCodeRead(data: string) {
-        console.log("QR Code Lidas:", data);
-        
-        // LÓGICA DO QUE FAZER COM O DADO
+        try {
+            const dadosPaciente = JSON.parse(data);
+            console.log("Dados identificados: ", dadosPaciente);
+
+            if (!dadosPaciente.nome || !dadosPaciente.cns) {
+                throw new Error("QR Code incompleto ou inválido");
+            }
+
+            router.push({
+                pathname: "./dados_paciente",
+                params: {
+                    dadosPaciente: JSON.stringify(dadosPaciente)
+                }
+            });
+
+        } catch (error) {
+            Alert.alert(
+                "QR Code Inválido",
+                "Esta código não contem os dados do paciente esperados.",
+                [
+                    { text: "Tentar Novamente", onPress: () => { qrCodeLock.current = false } }
+                ]
+            );
+        }
+
+        {
+            // Gere o qrCode, em texto, cole exatamente neste formato q e um JSON use o link abaixo para gerar o qr code (TEXTO)
+            // Acesse: https://qr.io/pt/?gad_source=1&gad_campaignid=22781241288&gbraid=0AAAAAC6IOXL3EdscnKB4tYYMxyshR_2Id&gclid=Cj0KCQiAuvTJBhCwARIsAL6DemhyHmbUMti51YeHqyVe5CBZNVQ_fYkYMfjdm0hnSqOnp4hbGZMRungaAme7EALw_wcB
+            //{
+            //   "cns": "700543219876543",
+            //   "nome": "MARIA DAS GRAÇAS SILVA",
+            //   "dataNascimento": "15/03/1980",
+            //   "nomeMae": "JOSEFA DA SILVA",
+            //   "telefone": "(81) 98888-7777",
+            //   "email": "maria.graca@email.com"
+            //}
+        }
     }
 
     if (!permission) {
@@ -39,11 +73,11 @@ export default function LerQrCode() {
 
     return (
         <View style={{ flex: 1 }}>
-            <CameraView 
+            <CameraView
                 style={StyleSheet.absoluteFillObject}
-                facing="back" 
+                facing="back"
                 onBarcodeScanned={({ data }) => {
-                    if(data && !qrCodeLock.current){
+                    if (data && !qrCodeLock.current) {
                         qrCodeLock.current = true;
                         handleQRCodeRead(data);
                     }

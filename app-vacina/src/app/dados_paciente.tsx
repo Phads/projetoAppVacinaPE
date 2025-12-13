@@ -1,86 +1,120 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
     TextInput,
     ScrollView,
     TouchableOpacity,
-    StyleSheet
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
 } from 'react-native';
 import { globalStyle } from '../../constants/globalStyles';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 export default function ConfirmarDadosScreen() {
-    // provisório, apenas para ter ideia de como vai ser
-    const [telefone, setTelefone] = useState("(81) 99999 - 1234");
-    const [email, setEmail] = useState("pedroAlves113@gmail.com");
+    const params = useLocalSearchParams();
+
+    const [cns, setCns] = useState("---");
+    const [nome, setNome] = useState("");
+    const [dataNascimento, setDataNascimento] = useState("");
+    const [nomeMae, setNomeMae] = useState("");
+
+    const [telefone, setTelefone] = useState("");
+    const [email, setEmail] = useState("");
+
+    useEffect(() => {
+        if (params.dadosPaciente) {
+            try {
+                const dados = JSON.parse(params.dadosPaciente as string);
+
+                setCns(dados.cns || "---")
+                setNome(dados.nome || "")
+                setDataNascimento(dados.dataNascimento || "---")
+                setNomeMae(dados.nomeMae || "---")
+
+                setTelefone(dados.telefone || "---")
+                setEmail(dados.email || "---")
+            } catch (error) {
+                console.log("Erro ao processar dados: ", error);
+            }
+        }
+    }, [params]);
 
     return (
-        <ScrollView contentContainerStyle={globalStyle.container}>
-            <View style={globalStyle.header}>
-                <Text style={globalStyle.headerTitle}>Dados do Paciente</Text>
-            </View>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={globalStyle.container}
+            keyboardVerticalOffset={40}
+        >
+            <ScrollView >
+                <View style={globalStyle.header}>
+                    <Text style={globalStyle.headerTitle}>Dados do Paciente</Text>
+                </View>
 
-            {/* --- SEÇÃO 1: DADOS PUXADOS (Leitura) --- */}
-            <Text style={styles.sectionTitleBlue}>
-                Dados Puxados (CNS:{'\n'}7002328771299737)
-            </Text>
+                {/* --- SEÇÃO 1: DADOS PUXADOS (Leitura) --- */}
+                <Text style={styles.sectionTitleBlue}>
+                    Dados Puxados (CNS:{'\n'}{cns})
+                </Text>
 
-            {/* Campo Somente Leitura 1 */}
-            <View style={styles.readOnlyInput}>
-                <Text style={styles.labelSmall}>Nome Completo</Text>
-                <Text style={styles.readOnlyValue}>PEDRO HENRIQUE ALVES DA SILVA</Text>
-            </View>
+                {/* Campo Somente Leitura 1 */}
+                <View style={styles.readOnlyInput}>
+                    <Text style={styles.labelSmall}>Nome Completo</Text>
+                    <Text style={styles.readOnlyValue}>{nome}</Text>
+                </View>
 
-            {/* Campo Somente Leitura 2 */}
-            <View style={styles.readOnlyInput}>
-                <Text style={styles.labelSmall}>Data de Nascimento</Text>
-                <Text style={styles.readOnlyValue}>19/05/2002 (23 anos)</Text>
-            </View>
+                {/* Campo Somente Leitura 2 */}
+                <View style={styles.readOnlyInput}>
+                    <Text style={styles.labelSmall}>Data de Nascimento</Text>
+                    <Text style={styles.readOnlyValue}>{dataNascimento}</Text>
+                </View>
 
-            {/* Campo Somente Leitura 3 */}
-            <View style={styles.readOnlyInput}>
-                <Text style={styles.labelSmall}>Nome da Mãe</Text>
-                <Text style={styles.readOnlyValue}>ZULEIDE ALVES DA SILVA</Text>
-            </View>
+                {/* Campo Somente Leitura 3 */}
+                <View style={styles.readOnlyInput}>
+                    <Text style={styles.labelSmall}>Nome da Mãe</Text>
+                    <Text style={styles.readOnlyValue}>{nomeMae}</Text>
+                </View>
 
 
-            {/* SEÇÃO 2: DADOS DE CONTATO (Edição) */}
-            <Text style={styles.sectionTitleDark}>
-                Dados de Contato (Atualização)
-            </Text>
+                {/* SEÇÃO 2: DADOS DE CONTATO (Edição) */}
+                <Text style={styles.sectionTitleDark}>
+                    Dados de Contato (Atualização)
+                </Text>
 
-            {/* Input Editável 1 */}
-            <TextInput
-                style={styles.input}
-                value={telefone}
-                onChangeText={setTelefone}
-                keyboardType="phone-pad"
-            />
+                {/* Input Editável 1 */}
+                <TextInput
+                    style={styles.input}
+                    value={telefone}
+                    onChangeText={setTelefone}
+                    keyboardType="phone-pad"
+                    placeholder='(XX) XXXXX-XXXX'
+                />
 
-            {/* Input Editável 2 */}
-            <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <View style={styles.divider} />
+                {/* Input Editável 2 */}
+                <TextInput
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholder='emial@exemplo.com'
+                />
+                <View style={styles.divider} />
 
-            <Text style={styles.questionText}>
-                Os dados do paciente estão corretos?
-            </Text>
+                <Text style={styles.questionText}>
+                    Os dados do paciente estão corretos?
+                </Text>
 
-            <TouchableOpacity style={[globalStyle.button, styles.btnConfirm ]} activeOpacity={0.8} onPress={() => router.push('/carteira_vacinacao')}>
-                <Text style={styles.btnConfirmText}>Confirmar Dados e Avançar</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={[globalStyle.button, styles.btnConfirm]} activeOpacity={0.8} onPress={() => router.push('/carteira_vacinacao')}>
+                    <Text style={styles.btnConfirmText}>Confirmar Dados e Avançar</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.btnOutline} activeOpacity={0.8}>
-                <Text style={styles.btnOutlineText}>Corrigir Dados (Abrir formulário)</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.btnOutline} activeOpacity={0.8}>
+                    <Text style={styles.btnOutlineText}>Corrigir Dados (Abrir formulário)</Text>
+                </TouchableOpacity>
 
-        </ScrollView>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 

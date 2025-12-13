@@ -62,8 +62,7 @@ export default function NovoAtendimentoScreen() {
           {profissional ? profissional.nome : "Carregando..."}
         </Text>
         <Text style={styles.profCoren}>
-
-          {profissional ? profissional.coren : "---"}
+          COREN: {profissional ? profissional.coren : "---"}
         </Text>
       </View>
 
