@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const AplicacaoSchema = new mongoose.Schema({
   vacina: { type: mongoose.Schema.Types.ObjectId, ref: 'Vacina' },
   profissional: { type: mongoose.Schema.Types.ObjectId, ref: 'ProfissionalSaude' },
+  paciente: { type: mongoose.Schema.Types.ObjectId, ref: 'Paciente' },
 
   fabricante: {
     type: String,

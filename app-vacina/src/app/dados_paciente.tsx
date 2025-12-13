@@ -8,38 +8,76 @@ import {
     StyleSheet,
     KeyboardAvoidingView,
     Platform,
+    Alert,
+    ActivityIndicator,
+    Button
 } from 'react-native';
 import { globalStyle } from '../../constants/globalStyles';
 import { router, useLocalSearchParams } from 'expo-router';
+import { buscarPacientePorCns } from "../services/pacienteServices";
 
 export default function ConfirmarDadosScreen() {
-    const params = useLocalSearchParams();
+    // 1. AJUSTE: Pegamos também 'dadosIniciais' (o JSON do QR Code)
+    const { cns, dadosIniciais } = useLocalSearchParams();
 
-    const [cns, setCns] = useState("---");
-    const [nome, setNome] = useState("");
-    const [dataNascimento, setDataNascimento] = useState("");
-    const [nomeMae, setNomeMae] = useState("");
-
+    // Estados para os campos editáveis
     const [telefone, setTelefone] = useState("");
     const [email, setEmail] = useState("");
 
+    const [paciente, setPaciente] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-        if (params.dadosPaciente) {
+        async function carregarDados() {
             try {
-                const dados = JSON.parse(params.dadosPaciente as string);
+                let dadosPac = null;
 
-                setCns(dados.cns || "---")
-                setNome(dados.nome || "")
-                setDataNascimento(dados.dataNascimento || "---")
-                setNomeMae(dados.nomeMae || "---")
+                // A. Se veio JSON direto do QR Code (Instantâneo)
+                if (dadosIniciais) {
+                    console.log("Usando dados do QR Code");
+                    dadosPac = JSON.parse(dadosIniciais as string);
+                } 
+                // B. Se não veio JSON, busca no Backend (Backup)
+                else if (cns) {
+                    console.log("Buscando dados no backend...");
+                    const res = await buscarPacientePorCns(cns as string);
+                    dadosPac = res.paciente || res;
+                }
 
-                setTelefone(dados.telefone || "---")
-                setEmail(dados.email || "---")
+                if (dadosPac) {
+                    setPaciente(dadosPac);
+                    setTelefone(dadosPac.telefone || "");
+                    setEmail(dadosPac.email || "");
+                }
+
             } catch (error) {
-                console.log("Erro ao processar dados: ", error);
+                console.error("Erro ao carregar:", error);
+                Alert.alert("Erro", "Não foi possível carregar os dados.");
+            } finally {
+                setLoading(false);
             }
         }
-    }, [params]);
+
+        carregarDados();
+    }, [cns, dadosIniciais]);
+
+    if (loading) {
+        return (
+            <View style={[globalStyle.container, styles.center]}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={{ marginTop: 10 }}>Carregando dados...</Text>
+            </View>
+        );
+    }
+
+    if (!paciente) {
+        return (
+            <View style={[globalStyle.container, styles.center]}>
+                <Text>Paciente não encontrado.</Text>
+                <Button title="Voltar" onPress={() => router.back()} />
+            </View>
+        );
+    }
 
     return (
         <KeyboardAvoidingView
@@ -54,25 +92,27 @@ export default function ConfirmarDadosScreen() {
 
                 {/* --- SEÇÃO 1: DADOS PUXADOS (Leitura) --- */}
                 <Text style={styles.sectionTitleBlue}>
-                    Dados Puxados (CNS:{'\n'}{cns})
+                    Dados Puxados (CNS:{'\n'}{paciente.cns})
                 </Text>
 
                 {/* Campo Somente Leitura 1 */}
                 <View style={styles.readOnlyInput}>
                     <Text style={styles.labelSmall}>Nome Completo</Text>
-                    <Text style={styles.readOnlyValue}>{nome}</Text>
+                    <Text style={styles.readOnlyValue}>{paciente.nomeCompleto || paciente.nome}</Text>
                 </View>
 
                 {/* Campo Somente Leitura 2 */}
                 <View style={styles.readOnlyInput}>
                     <Text style={styles.labelSmall}>Data de Nascimento</Text>
-                    <Text style={styles.readOnlyValue}>{dataNascimento}</Text>
+                    <Text style={styles.readOnlyValue}>
+                        {paciente.dataNascimento ? new Date(paciente.dataNascimento).toLocaleDateString('pt-BR') : "Não informada"}
+                    </Text>
                 </View>
 
                 {/* Campo Somente Leitura 3 */}
                 <View style={styles.readOnlyInput}>
                     <Text style={styles.labelSmall}>Nome da Mãe</Text>
-                    <Text style={styles.readOnlyValue}>{nomeMae}</Text>
+                    <Text style={styles.readOnlyValue}>{paciente.nomeMae || "Não informado"}</Text>
                 </View>
 
 
@@ -97,7 +137,7 @@ export default function ConfirmarDadosScreen() {
                     onChangeText={setEmail}
                     keyboardType="email-address"
                     autoCapitalize="none"
-                    placeholder='emial@exemplo.com'
+                    placeholder='email@exemplo.com'
                 />
                 <View style={styles.divider} />
 
@@ -105,14 +145,19 @@ export default function ConfirmarDadosScreen() {
                     Os dados do paciente estão corretos?
                 </Text>
 
-                <TouchableOpacity style={[globalStyle.button, styles.btnConfirm]} activeOpacity={0.8} onPress={() => router.push('/carteira_vacinacao')}>
+                <TouchableOpacity
+                    style={[globalStyle.button, styles.btnConfirm]}
+                    activeOpacity={0.8}
+                    onPress={() => {
+                        // Passa o CNS para a próxima tela
+                        router.push({
+                            pathname: "/carteira_vacinacao",
+                            params: { cns: paciente.cns }
+                        } as any);
+                    }}
+                >
                     <Text style={styles.btnConfirmText}>Confirmar Dados e Avançar</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity style={styles.btnOutline} activeOpacity={0.8}>
-                    <Text style={styles.btnOutlineText}>Corrigir Dados (Abrir formulário)</Text>
-                </TouchableOpacity>
-
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -133,7 +178,11 @@ const styles = StyleSheet.create({
         marginTop: 24,
         marginBottom: 16,
     },
-    // Campos Somente Leitura (Cinza)
+    center: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1
+    },
     readOnlyInput: {
         backgroundColor: '#E5E7EB',
         borderRadius: 8,

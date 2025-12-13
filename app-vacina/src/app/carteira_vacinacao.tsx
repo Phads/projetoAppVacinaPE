@@ -1,16 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  StatusBar
+  StatusBar,
+  ActivityIndicator
 } from "react-native";
 import { globalStyle } from "../../constants/globalStyles";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import { buscarPacientePorCns } from "@/services/pacienteServices";
 
 export default function CarteiraVacinacao() {
+  const { cns } = useLocalSearchParams();
+
+  // B. Estado para guardar os dados do paciente
+  const [paciente, setPaciente] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // C. Busca os dados assim que a tela abre
+  useEffect(() => {
+    async function carregarDados() {
+      if (cns) {
+        try {
+          const dados = await buscarPacientePorCns(cns as string);
+          setPaciente(dados);
+        } catch (error) {
+          console.error("Erro ao buscar paciente", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    }
+    carregarDados();
+  }, [cns]);
+
+  if (loading) {
+    return (
+      <View style={[globalStyle.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#0a76e9" />
+        <Text>Carregando carteira...</Text>
+      </View>
+    );
+  }
   return (
     <ScrollView contentContainerStyle={globalStyle.container}>
       <StatusBar
@@ -23,7 +56,9 @@ export default function CarteiraVacinacao() {
       </View>
 
       {/* HISTÓRICO - Nome */}
-      <Text style={styles.sectionTitle}>Histórico de PEDRO</Text>
+      <Text style={styles.sectionTitle}>
+        Histórico de {paciente?.nome ? paciente.nome.toUpperCase() : "PACIENTE"}
+      </Text>
 
       {/* VACINAS INDICADAS */}
       <View style={styles.cardYellow}>
@@ -88,8 +123,18 @@ export default function CarteiraVacinacao() {
       </View>
 
       {/* Botão inferior */}
-      <TouchableOpacity style={[globalStyle.button, styles.btnConfirm ]} activeOpacity={0.8} onPress={() => router.push('./selecao_vacina')}>
-                <Text style={styles.btnConfirmText}>Confirmar Dados e Avançar</Text>
+      <TouchableOpacity
+        style={[globalStyle.button, styles.btnConfirm]}
+        activeOpacity={0.8}
+        onPress={() => router.push({
+          pathname: './selecao_vacina',
+          params: { cns: cns } // <--- Passando o bastão adiante
+        })}
+      >
+        <Text
+          style={styles.btnConfirmText}>
+          Confirmar Dados e Avançar
+        </Text>
       </TouchableOpacity>
 
     </ScrollView>
@@ -199,27 +244,27 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-    btnConfirm: {
-        paddingVertical: 14,
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    btnConfirmText: {
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    btnOutline: {
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#16A34A', // Verde
-        borderRadius: 8,
-        paddingVertical: 14,
-        alignItems: 'center',
-    },
-    btnOutlineText: {
-        color: '#16A34A', // Texto Verde
-        fontWeight: 'bold',
-        fontSize: 16,
-    }
+  btnConfirm: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  btnConfirmText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  btnOutline: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#16A34A', // Verde
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  btnOutlineText: {
+    color: '#16A34A', // Texto Verde
+    fontWeight: 'bold',
+    fontSize: 16,
+  }
 });
