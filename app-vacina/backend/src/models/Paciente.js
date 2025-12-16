@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const PacienteSchema = new mongoose.Schema(
   {
+    cns: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     nomeCompleto: { type: String, required: true },
     cpf: { type: String, required: true, unique: true },
     nomeMae: String,

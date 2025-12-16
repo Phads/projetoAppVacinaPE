@@ -1,9 +1,9 @@
 import { StyleSheet, View, Button, Text, Alert, ActivityIndicator } from "react-native";
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRef, useState, useEffect } from 'react';
-import { router, useLocalSearchParams, Href } from "expo-router"; // Importe useLocalSearchParams
+import { router, useLocalSearchParams, Href } from "expo-router"; 
 import { globalStyle } from "../../constants/globalStyles";
-import { salvarPacienteQrCode } from "../services/pacienteServices"; // Ajuste o caminho se necessário
+import { salvarPacienteQrCode } from "../services/pacienteServices";
 
 export default function LerQrCode() {
     const [permission, requestPermission] = useCameraPermissions();
@@ -50,17 +50,15 @@ export default function LerQrCode() {
 
         } catch (error: any) {
             setLoading(false);
-            console.error("ERRO DETALHADO:", error); // OLHE O TERMINAL PARA VER ESSE ERRO
+            console.error("ERRO DETALHADO:", error);
 
             let mensagemErro = "Não foi possível processar o código.";
 
-            // Tenta descobrir o tipo de erro para ajudar o usuário
             if (error instanceof SyntaxError) {
                 mensagemErro = "O formato do QR Code não é um JSON válido.";
             } else if (error.message.includes("Network Error") || error.message.includes("failed")) {
                 mensagemErro = "Erro de conexão com o servidor. Verifique se o backend está rodando.";
             } else if (error.response) {
-                // Erro que veio do backend (ex: erro 500)
                 mensagemErro = `Erro do Servidor: ${error.response.status}`;
             }
 

@@ -83,7 +83,21 @@ exports.buscarPorCns = async (req, res) => {
             return res.status(404).json({ error: "Paciente não encontrado." });
         }
 
-        return res.status(200).json(paciente);
+        const vacinas = await Vacina.find({ paciente: paciente._id });
+
+        const aplicacoes = await Aplicacao.find({ paciente: paciente._id })
+            .populate('vacina')
+            .populate('profissional');
+
+        return res.status(200).json({
+            paciente, // Dados pessoais
+            cartaoVacinacao: {
+                vacinasIndicadas: vacinas.filter(v => v.status === 'PENDENTE'),
+                vacinasAplicadas: vacinas.filter(v => v.status === 'APLICADA'),
+                historicoAplicacoes: aplicacoes
+            }
+        });
+
     } catch (error) {
         console.error("Erro ao buscar paciente:", error);
         return res.status(500).json({ error: "Erro interno do servidor." });

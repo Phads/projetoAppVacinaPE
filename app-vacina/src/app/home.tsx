@@ -6,15 +6,21 @@ import {
   ScrollView,
   TextInput,
   StatusBar,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { globalStyle } from '../../constants/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { buscarPacientePorCns } from '@/services/pacienteServices';
 
 export default function NovoAtendimentoScreen() {
   const [profissional, setProfissional] = useState<any>(null);
+
+  const [cnsBusca, setCnsBusca] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     carregarDados();
@@ -38,6 +44,51 @@ export default function NovoAtendimentoScreen() {
   const onPressResumo = () => {
     return router.push('./resumo');
   }
+
+  const handleBuscarPaciente = async () => {
+    // Remove espaços vazios
+    const cnsLimpo = cnsBusca.trim();
+
+    if (!cnsLimpo) {
+      Alert.alert("Campo Vazio", "Por favor, digite o número do CNS.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      console.log("Buscando CNS manual:", cnsLimpo);
+      const resultado = await buscarPacientePorCns(cnsLimpo);
+
+      // Se a função acima não der erro, significa que achou!
+      // O backend retorna: { paciente: {...}, cartaoVacinacao: {...} }
+
+      const pacienteEncontrado = resultado.paciente || resultado;
+
+      if (pacienteEncontrado && pacienteEncontrado.cns) {
+        // Limpa o campo
+        setCnsBusca('');
+
+        // Navega para a tela de confirmação enviando o CNS
+        router.push({
+          pathname: "/dados_paciente", // Verifique se o nome da rota é este mesmo no seu projeto
+          params: { cns: pacienteEncontrado.cns }
+        } as any);
+      } else {
+        Alert.alert("Erro", "Formato de dados inválido recebido do servidor.");
+      }
+
+    } catch (error) {
+      console.error("Erro na busca:", error);
+      // Se der erro 404 (não encontrado)
+      Alert.alert(
+        "Paciente não encontrado",
+        "Verifique o número digitado. Se for um paciente novo, utilize a opção 'Ler QR Code' para cadastrá-lo."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={globalStyle.container}>
@@ -81,13 +132,24 @@ export default function NovoAtendimentoScreen() {
 
       <TextInput
         style={globalStyle.input}
-        placeholder="Digitar número do SUS ou CPF"
+        placeholder="Digitar número do SUS (CNS)"
         placeholderTextColor="#9CA3AF"
         keyboardType="numeric"
+        value={cnsBusca}
+        onChangeText={setCnsBusca}
       />
 
-      <TouchableOpacity style={styles.searchButton} activeOpacity={0.8} onPress={() => router.navigate('./dados_paciente')}>
-        <Text style={styles.searchButtonText}>Buscar Paciente</Text>
+      <TouchableOpacity
+        style={[styles.searchButton, loading && { opacity: 0.7 }]}
+        activeOpacity={0.8}
+        onPress={handleBuscarPaciente}
+        disabled={loading}
+      >
+        {loading ? (
+            <ActivityIndicator color="#FFF" />
+        ) : (
+            <Text style={styles.searchButtonText}>Buscar Paciente</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.statusCard}>

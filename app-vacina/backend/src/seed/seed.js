@@ -23,6 +23,15 @@ async function seed() {
       coren: '11122',
     });
 
+    const profissional2 = await ProfissionalSaude.create({
+      nome: 'Pedro Henrique Alves da Silva',
+      cpf: '10203040506',
+      email: 'pedro@gmail.com',
+      senha: '654321',
+      unidadeSaude: 'Policlínica Rio Doce IV - Olinda/PE',
+      coren: '123456-PE-EN',
+    });
+
     // PACIENTE
     const paciente = await Paciente.create({
       nomeCompleto: 'Maria da Silva',
@@ -52,6 +61,7 @@ async function seed() {
     console.log('Seed executado com sucesso');
     console.log('Paciente:', paciente.nomeCompleto);
     console.log('Profissional:', profissional.nome);
+    console.log('Profissional:', profissional2.nome);
 
     process.exit();
   } catch (error) {
