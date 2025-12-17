@@ -26,6 +26,7 @@ router.post('/login', async (req, res) => {
     nome: profissional.nome,
     email: profissional.email,
     coren: profissional.coren,
+    unidade: profissional.unidadeSaude,
   });
 });
 

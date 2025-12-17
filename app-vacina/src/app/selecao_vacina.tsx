@@ -10,14 +10,14 @@ import {
   ActivityIndicator,
   Alert
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import Feather from "react-native-vector-icons/Feather";
 
 import api from "../services/api";
 
 export default function SelecaoVacina() {
   const router = useRouter();
-
+  const params = useLocalSearchParams();
   const [listaVacinas, setListaVacinas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState("");
@@ -63,7 +63,7 @@ export default function SelecaoVacina() {
 
     router.push({
       pathname: "./registro_dose",
-      params: { vacinas: JSON.stringify(vacinasParaEnviar) },
+      params: { vacinas: JSON.stringify(vacinasParaEnviar), cns: params.cns },
     });
   };
 

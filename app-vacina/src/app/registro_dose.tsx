@@ -79,7 +79,9 @@ export default function FormRegistrarDoseAplicada() {
             
             router.push({
                 pathname: '/revisao', 
-                params: { registros: JSON.stringify(novosRegistros) }
+                params: { registros: JSON.stringify(novosRegistros), 
+                cns: params.cns    
+                }
             });
         } else {
             setIndiceAtual(indiceAtual + 1);

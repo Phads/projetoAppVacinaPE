@@ -33,12 +33,13 @@ export default function Login() {
     try {
       const dadosResposta = await login(email, senha);
 
+
       console.log("RESPOSTA DO LOGIN:", JSON.stringify(dadosResposta, null, 2));
 
       const profissional = dadosResposta.profissional || dadosResposta;
 
       const usuarioString = JSON.stringify(profissional);
-      await AsyncStorage.setItem('usuario_logado', usuarioString);
+      await AsyncStorage.setItem('@app_vacina:usuario', usuarioString);
 
       Alert.alert("Sucesso", `Bem-vindo(a), ${profissional.nome || "Usuário"}`)
 
