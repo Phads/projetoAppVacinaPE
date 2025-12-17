@@ -26,7 +26,7 @@ const getBackendUrl = () => {
 
 const API_URL = getBackendUrl();
 
-console.log("🔗 Conectando API em:", API_URL); // Isso ajuda a ver no terminal qual IP ele pegou
+console.log("Conectando API em:", API_URL); // Isso ajuda a ver no terminal qual IP ele pegou
 
 const api = axios.create({
     baseURL: API_URL,

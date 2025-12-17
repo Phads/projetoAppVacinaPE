@@ -38,10 +38,6 @@ export default function CarteiraVacinacao() {
       if (cns) {
         try {
           const dados = await buscarPacientePorCns(cns as string);
-          
-          console.log("--- DEBUG DE DADOS ---");
-          console.log("DADOS CHEGANDO:", JSON.stringify(dados, null, 2));
-          console.log("TEM VACINAS?", dados.vacinas ? "SIM" : "NÃO");
 
           setPaciente(dados);
           
@@ -82,7 +78,7 @@ export default function CarteiraVacinacao() {
       </View>
 
       <Text style={styles.sectionTitle}>
-        Olá, {paciente?.nome ? paciente.nome.split(' ')[0] : "Paciente"}
+        Histórico de vacinação do {paciente?.nome ? paciente.nome.split(' ')[0] : "Paciente"}
       </Text>
 
       {/* 4. CABEÇALHO DA LISTA */}

@@ -86,8 +86,120 @@ async function seed() {
       }
     ];
 
+    const catalogoVacinas = [
+      {
+        paciente: paciente._id,
+        nome: "INFLUENZA (GRIPE)",
+        dose: "Dose Anual",
+        tipo: "Campanha", 
+        status: "Disponivel",
+        fabricante: "Butantan",
+        lote: "INF2024-X",
+        observacoes: "Campanha Nacional"
+      },
+      {
+        paciente: paciente._id,
+        nome: "COVID-19 (MODERNA)",
+        dose: "Reforço Bivalente",
+        tipo: "Campanha",
+        status: "Disponivel",
+        fabricante: "Moderna",
+        lote: "MOD-X55",
+        observacoes: "Variante XBB 1.5"
+      },
+      {
+        paciente: paciente._id,
+        nome: "DENGUE (QDENGA)",
+        dose: "1ª Dose",
+        tipo: "Campanha",
+        status: "Disponivel",
+        fabricante: "Takeda",
+        lote: "DEN-001",
+        observacoes: "Público alvo específico"
+      },
+
+      // --- ROTINA (Adulto/Geral) ---
+      {
+        paciente: paciente._id,
+        nome: "HEPATITE B",
+        dose: "Dose Inicial/Reforço",
+        tipo: "Rotina",
+        status: "Disponivel",
+        fabricante: "Butantan", 
+        lote: "HEP-B22",
+        observacoes: "Disponível"
+      },
+      {
+        paciente: paciente._id,
+        nome: "DUPLA ADULTO (dT)",
+        dose: "Reforço",
+        tipo: "Rotina",
+        status: "Disponivel",
+        fabricante: "Fiocruz",
+        lote: "DT-2025",
+        observacoes: "Difteria e Tétano"
+      },
+      {
+        paciente: paciente._id,
+        nome: "TRÍPLICE VIRAL",
+        dose: "Dose Única",
+        tipo: "Rotina",
+        status: "Disponivel",
+        fabricante: "Fiocruz",
+        observacoes: "Sarampo, Caxumba, Rubéola"
+      },
+      {
+        paciente: paciente._id,
+        nome: "FEBRE AMARELA",
+        dose: "Dose Única",
+        tipo: "Rotina",
+        status: "Disponivel",
+        fabricante: "Bio-Manguinhos",
+        observacoes: "Áreas de risco"
+      },
+      {
+        paciente: paciente._id,
+        nome: "HPV",
+        dose: "Dose Única/Sequencial",
+        tipo: "Rotina",
+        status: "Disponivel",
+        fabricante: "Merck",
+        observacoes: "Quadrivalente (6, 11, 16, 18)"
+      },
+      {
+        paciente: paciente._id,
+        nome: "MENINGOCÓCICA ACWY",
+        dose: "Dose Única",
+        tipo: "Especial",
+        status: "Disponivel",
+        fabricante: "Pfizer",
+        observacoes: "CRIE / Adolescentes"
+      },
+      {
+        paciente: paciente._id,
+        nome: "PNEUMOCÓCICA 23",
+        dose: "Reforço",
+        tipo: "Especial",
+        status: "Disponivel",
+        fabricante: "MSD",
+        observacoes: "Pneumo 23 Valente"
+      },
+       {
+        paciente: paciente._id,
+        nome: "ANTIRRÁBICA",
+        dose: "Profilaxia",
+        tipo: "Especial",
+        status: "Disponivel",
+        fabricante: "Pasteur",
+        observacoes: "Pós-exposição"
+      }
+    ];
+
 
     console.log('Seed executado com sucesso');
+    await Vacina.insertMany(catalogoVacinas);
+    console.log(`✅ Catálogo de ${catalogoVacinas.length} vacinas criado para aplicação!`);
+    
     console.log('Paciente:', paciente.nomeCompleto);
     await Vacina.insertMany(vacinas);
     console.log(`${vacinas.length} vacinas cadastradas com sucesso!`);
