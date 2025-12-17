@@ -12,22 +12,45 @@ import { globalStyle } from "../../constants/globalStyles";
 import { router, useLocalSearchParams } from "expo-router";
 import { buscarPacientePorCns } from "@/services/pacienteServices";
 
+
+interface IVacina {
+  _id: string; 
+  nome: string;
+  dose?: string;
+  tipo?: string;
+  status: 'Aplicada' | 'Pendente';
+  fabricante?: string;
+  lote?: string;
+  dataAplicacao?: string; 
+  observacoes?: string;
+}
+
 export default function CarteiraVacinacao() {
   const { cns } = useLocalSearchParams();
 
-  // B. Estado para guardar os dados do paciente
   const [paciente, setPaciente] = useState<any>(null);
+  const [listaVacinas, setListaVacinas] = useState<IVacina[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // C. Busca os dados assim que a tela abre
+  // 2. BUSCA DE DADOS
   useEffect(() => {
     async function carregarDados() {
       if (cns) {
         try {
           const dados = await buscarPacientePorCns(cns as string);
+          
+          console.log("--- DEBUG DE DADOS ---");
+          console.log("DADOS CHEGANDO:", JSON.stringify(dados, null, 2));
+          console.log("TEM VACINAS?", dados.vacinas ? "SIM" : "NÃO");
+
           setPaciente(dados);
+          
+          if (dados.vacinas) {
+            setListaVacinas(dados.vacinas);
+          }
+          
         } catch (error) {
-          console.error("Erro ao buscar paciente", error);
+          console.error("Erro ao buscar dados", error);
         } finally {
           setLoading(false);
         }
@@ -36,14 +59,17 @@ export default function CarteiraVacinacao() {
     carregarDados();
   }, [cns]);
 
+  const vacinasPendentes = listaVacinas.filter(vacina => vacina.status === 'Pendente');
+
   if (loading) {
     return (
       <View style={[globalStyle.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#0a76e9" />
-        <Text>Carregando carteira...</Text>
+        <Text style={{marginTop: 10, color: '#666'}}>Buscando dados no sistema...</Text>
       </View>
     );
   }
+
   return (
     <ScrollView contentContainerStyle={globalStyle.container}>
       <StatusBar
@@ -52,88 +78,63 @@ export default function CarteiraVacinacao() {
         translucent={false}
       />
       <View style={globalStyle.header}>
-        <Text style={globalStyle.headerTitle}>Carteira de Vacinação Digital</Text>
+        <Text style={globalStyle.headerTitle}>Carteira de Vacinação</Text>
       </View>
 
-      {/* HISTÓRICO - Nome */}
       <Text style={styles.sectionTitle}>
-        Histórico de {paciente?.nome ? paciente.nome.toUpperCase() : "PACIENTE"}
+        Olá, {paciente?.nome ? paciente.nome.split(' ')[0] : "Paciente"}
       </Text>
 
-      {/* VACINAS INDICADAS */}
-      <View style={styles.cardYellow}>
-        <Text style={styles.cardYellowTitle}>Vacinas Indicadas para Hoje</Text>
-        <Text style={styles.cardYellowSubtitle}>
-          Com base na idade e histórico:
+      {/* 4. CABEÇALHO DA LISTA */}
+      <View style={styles.headerSection}>
+        <Text style={styles.subTitleSection}>Vacinas Pendentes</Text>
+        <Text style={styles.descSection}>
+          Estas vacinas constam no sistema como não aplicadas.
         </Text>
-
-        <View style={styles.vacinaItem}>
-          <View>
-            <Text style={styles.vacinaNome}>INFLUENZA (H1N1+H3N2+B)</Text>
-            <Text style={styles.vacinaDesc}>Dose Anual · Campanha 2024</Text>
-          </View>
-          <View style={styles.tagAplicar}>
-            <Text style={styles.tagText}>Apl</Text>
-          </View>
-        </View>
-
-        <View style={styles.vacinaItem}>
-          <View>
-            <Text style={styles.vacinaNome}>FEBRE AMARELA</Text>
-            <Text style={styles.vacinaDesc}>Reforço · Rotina</Text>
-          </View>
-          <View style={styles.tagAplicar}>
-            <Text style={styles.tagText}>Apl</Text>
-          </View>
-        </View>
       </View>
 
-      {/* HISTÓRICO COMPLETO */}
-      <Text style={styles.sectionTitle}>Histórico Completo</Text>
-
-      <View style={styles.listaHistorico}>
-
-        <View style={styles.historicoItem}>
-          <Text style={styles.historicoNome}>ANTITETÂNICA</Text>
-          <View style={styles.tagAplicada}>
-            <Text style={styles.tagAplicadaText}>Apl</Text>
+      {/* 5. LISTA DE PENDÊNCIAS */}
+      <View style={styles.listaContainer}>
+        {vacinasPendentes.length === 0 ? (
+          <View style={styles.emptyState}>
+             <Text style={styles.emptyText}>Nenhuma pendência encontrada.</Text>
+             <Text style={styles.emptySubText}>Todas as vacinas registradas foram aplicadas!</Text>
           </View>
-        </View>
-
-        <View style={styles.historicoItem}>
-          <Text style={styles.historicoNome}>Gripe (Influenza)</Text>
-          <View style={styles.tagAplicada}>
-            <Text style={styles.tagAplicadaText}>Apl</Text>
-          </View>
-        </View>
-
-        <View style={styles.historicoItem}>
-          <Text style={styles.historicoNome}>Tríplice viral</Text>
-          <View style={styles.tagAplicada}>
-            <Text style={styles.tagAplicadaText}>Apl</Text>
-          </View>
-        </View>
-
-        <View style={styles.historicoItem}>
-          <Text style={styles.historicoNome}>Hepatite B</Text>
-          <View style={styles.tagPendente}>
-            <Text style={styles.tagPendenteText}>Pen</Text>
-          </View>
-        </View>
+        ) : (
+          vacinasPendentes.map((vacina) => (
+            <View key={vacina._id} style={styles.cardVacina}>
+              <View style={styles.infoContainer}>
+                <Text style={styles.vacinaNome}>{vacina.nome}</Text>
+                
+                {/* Mostra a dose se existir, senão mostra texto padrão */}
+                <Text style={styles.vacinaDose}>
+                  {vacina.dose ? vacina.dose : "Dose Única/Reforço"}
+                </Text>
+                
+                {/* Exibe fabricante se houver*/}
+                {vacina.fabricante && (
+                  <Text style={styles.vacinaFabricante}>Fab: {vacina.fabricante}</Text>
+                )}
+              </View>
+              
+              <View style={styles.statusBadge}>
+                <Text style={styles.statusText}>Pendente</Text>
+              </View>
+            </View>
+          ))
+        )}
       </View>
 
-      {/* Botão inferior */}
       <TouchableOpacity
-        style={[globalStyle.button, styles.btnConfirm]}
+        style={[globalStyle.button, styles.btnAvancar]}
         activeOpacity={0.8}
         onPress={() => router.push({
           pathname: './selecao_vacina',
-          params: { cns: cns } // <--- Passando o bastão adiante
+          params: { cns: cns }
         })}
       >
-        <Text
-          style={styles.btnConfirmText}>
-          Confirmar Dados e Avançar
+        <Text style={styles.btnText}>
+          Atualizar Carteira
         </Text>
       </TouchableOpacity>
 
@@ -143,128 +144,113 @@ export default function CarteiraVacinacao() {
 
 const styles = StyleSheet.create({
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#374151",
-    marginTop: 10,
-    marginBottom: 12,
-  },
-
-  /* --- Card amarelo --- */
-  cardYellow: {
-    backgroundColor: "#FEF9C3",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  cardYellowTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#1F2937",
+    marginTop: 16,
     marginBottom: 4,
   },
-  cardYellowSubtitle: {
-    fontSize: 12,
+  headerSection: {
+    marginBottom: 16
+  },
+  subTitleSection: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  descSection: {
+    fontSize: 13,
     color: "#6B7280",
-    marginBottom: 10,
+    marginTop: 2
   },
 
-  /* Vacinas recomendadas */
-  vacinaItem: {
+  listaContainer: {
+    marginBottom: 20,
+    minHeight: 200,
+  },
+
+  cardVacina: {
+    backgroundColor: "#FFF",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
     flexDirection: "row",
     justifyContent: "space-between",
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
-    backgroundColor: "#FFF",
-    marginBottom: 12,
-    elevation: 1
+    alignItems: 'center',
+    
+    elevation: 2, 
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: "#EF4444" 
+  },
+  infoContainer: {
+    flex: 1,
+    marginRight: 10
   },
   vacinaNome: {
-    fontWeight: "bold",
-    fontSize: 14,
-    color: "#1F2937",
+    fontSize: 16,
+    color: "#111827",
+    fontWeight: "700",
+    marginBottom: 2
   },
-  vacinaDesc: {
-    fontSize: 12,
-    color: "#6B7280",
+  vacinaDose: {
+    fontSize: 13,
+    color: "#4B5563",
+    marginBottom: 2
+  },
+  vacinaFabricante: {
+    fontSize: 11,
+    color: "#9CA3AF",
+    fontStyle: 'italic'
   },
 
-  tagAplicar: {
-    backgroundColor: "#2563EB",
+  /* Badge de Status */
+  statusBadge: {
+    backgroundColor: "#FEF2F2",
     paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    alignSelf: "center",
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#FCA5A5"
   },
-  tagText: {
-    color: "#FFF",
+  statusText: {
+    color: "#DC2626",
     fontWeight: "bold",
+    fontSize: 11,
+    textTransform: 'uppercase'
   },
 
-  /* Histórico completo */
-  listaHistorico: {
-    marginBottom: 20,
+  /* Estado Vazio */
+  emptyState: {
+    alignItems: 'center',
+    padding: 30,
+    opacity: 0.7
   },
-  historicoItem: {
-    backgroundColor: "#FFF",
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    elevation: 1
+  emptyText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#374151'
   },
-  historicoNome: {
-    fontSize: 15,
-    color: "#1F2937",
-    fontWeight: "500",
-  },
-  tagAplicada: {
-    backgroundColor: "#16A34A",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    justifyContent: "center",
-  },
-  tagAplicadaText: {
-    color: "#FFF",
-    fontWeight: "bold",
+  emptySubText: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginTop: 4
   },
 
-  tagPendente: {
-    backgroundColor: "#DC2626",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    justifyContent: "center",
-  },
-  tagPendenteText: {
-    color: "#FFF",
-    fontWeight: "bold",
-  },
-
-  btnConfirm: {
+  /* Botão */
+  btnAvancar: {
     paddingVertical: 14,
     alignItems: 'center',
     marginBottom: 16,
+    marginTop: 'auto', // Empurra para o fim se a tela for grande
+    backgroundColor: '#0a76e9'
   },
-  btnConfirmText: {
+  btnText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
   },
-  btnOutline: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#16A34A', // Verde
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  btnOutlineText: {
-    color: '#16A34A', // Texto Verde
-    fontWeight: 'bold',
-    fontSize: 16,
-  }
 });

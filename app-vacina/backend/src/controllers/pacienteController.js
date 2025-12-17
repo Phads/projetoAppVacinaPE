@@ -73,33 +73,36 @@ exports.salvarPacienteQrCode = async (req, res) => {
 };
 
 exports.buscarPorCns = async (req, res) => {
-    try {
-        const { cns } = req.params;
-        console.log("Buscando paciente pelo CNS:", cns);
+  console.log("--- DEBUG BACKEND: INICIO ---");
+  console.log("1. Buscando CNS:", req.params.cns);
 
-        const paciente = await Paciente.findOne({ cns: cns });
+  try {
+    const { cns } = req.params;
 
-        if (!paciente) {
-            return res.status(404).json({ error: "Paciente não encontrado." });
-        }
+    const paciente = await Paciente.findOne({ cns: cns });
 
-        const vacinas = await Vacina.find({ paciente: paciente._id });
-
-        const aplicacoes = await Aplicacao.find({ paciente: paciente._id })
-            .populate('vacina')
-            .populate('profissional');
-
-        return res.status(200).json({
-            paciente, // Dados pessoais
-            cartaoVacinacao: {
-                vacinasIndicadas: vacinas.filter(v => v.status === 'PENDENTE'),
-                vacinasAplicadas: vacinas.filter(v => v.status === 'APLICADA'),
-                historicoAplicacoes: aplicacoes
-            }
-        });
-
-    } catch (error) {
-        console.error("Erro ao buscar paciente:", error);
-        return res.status(500).json({ error: "Erro interno do servidor." });
+    if (!paciente) {
+      console.log("Paciente não encontrado no banco.");
+      return res.status(404).json({ error: 'Paciente não encontrado' });
     }
+    console.log(`2. Paciente encontrado: ${paciente.nome} (ID: ${paciente._id})`);
+
+    const vacinas = await Vacina.find({ paciente: paciente._id });
+    console.log(`3. Vacinas encontradas no banco: ${vacinas.length}`);
+
+    const pacienteDados = paciente.toObject();
+
+    const respostaFinal = {
+      ...pacienteDados, 
+      vacinas: vacinas  
+    };
+
+    console.log("4. Estrutura enviada tem vacinas?", respostaFinal.vacinas ? "SIM" : "NÃO");
+    
+    res.json(respostaFinal);
+
+  } catch (error) {
+    console.error("ERRO NO CONTROLLER:", error);
+    res.status(500).json({ error: 'Erro ao buscar dados' });
+  }
 };

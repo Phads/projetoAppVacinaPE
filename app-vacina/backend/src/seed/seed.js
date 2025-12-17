@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 // MODELS
 const Paciente = require('../models/Paciente');
 const ProfissionalSaude = require('../models/ProfissionalSaude');
+const Vacina = require('../models/Vacina');
 
 async function seed() {
   try {
@@ -34,32 +35,62 @@ async function seed() {
 
     // PACIENTE
     const paciente = await Paciente.create({
+      cns: '123456789012345',
       nomeCompleto: 'Maria da Silva',
       cpf: '11122233344',
       nomeMae: 'Josefa Silva',
       dataNascimento: new Date('2002-05-19'),
       telefone: '81999999999',
       email: 'maria@gmail.com',
-      cartaoVacinacao: {
-        vacinas: [
-          {
-            nome: 'Influenza',
-            dose: 'Anual',
-            tipo: 'Rotina',
-            status: 'Aplicada'
-          },
-          {
-            nome: 'Hepatite B',
-            dose: 'Reforço',
-            tipo: 'Rotina',
-            status: 'Pendente'
-          }
-        ]
-      }
     });
+
+    const vacinas = [
+      // --- ESTAS DEVEM APARECER (Pendentes) ---
+      {
+        paciente: paciente._id,
+        nome: 'HEPATITE B',
+        dose: '1ª Dose',
+        tipo: 'Rotina',
+        status: 'Pendente', 
+        observacoes: 'Tomar na unidade mais próxima'
+      },
+      {
+        paciente: paciente._id,
+        nome: 'FEBRE AMARELA',
+        dose: 'Reforço',
+        tipo: 'Rotina',
+        status: 'Pendente', 
+        observacoes: 'Viajante para área de risco'
+      },
+
+      // --- ESTAS NÃO DEVEM APARECER (Já Aplicadas) ---
+      {
+        paciente: paciente._id,
+        nome: 'ANTITETÂNICA',
+        dose: 'Reforço 10 anos',
+        tipo: 'Rotina',
+        status: 'Aplicada', 
+        fabricante: 'Fiocruz',
+        lote: 'AB1234',
+        dataAplicacao: new Date('2023-01-10')
+      },
+      {
+        paciente: paciente._id,
+        nome: 'COVID-19',
+        dose: 'Dose Única',
+        tipo: 'Campanha',
+        status: 'Aplicada',
+        fabricante: 'Pfizer',
+        lote: 'PF9988',
+        dataAplicacao: new Date('2024-02-20')
+      }
+    ];
+
 
     console.log('Seed executado com sucesso');
     console.log('Paciente:', paciente.nomeCompleto);
+    await Vacina.insertMany(vacinas);
+    console.log(`${vacinas.length} vacinas cadastradas com sucesso!`);
     console.log('Profissional:', profissional.nome);
     console.log('Profissional:', profissional2.nome);
 

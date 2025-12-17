@@ -60,18 +60,14 @@ export default function NovoAtendimentoScreen() {
       console.log("Buscando CNS manual:", cnsLimpo);
       const resultado = await buscarPacientePorCns(cnsLimpo);
 
-      // Se a função acima não der erro, significa que achou!
-      // O backend retorna: { paciente: {...}, cartaoVacinacao: {...} }
-
       const pacienteEncontrado = resultado.paciente || resultado;
 
       if (pacienteEncontrado && pacienteEncontrado.cns) {
         // Limpa o campo
         setCnsBusca('');
 
-        // Navega para a tela de confirmação enviando o CNS
         router.push({
-          pathname: "/dados_paciente", // Verifique se o nome da rota é este mesmo no seu projeto
+          pathname: "/dados_paciente", 
           params: { cns: pacienteEncontrado.cns }
         } as any);
       } else {
