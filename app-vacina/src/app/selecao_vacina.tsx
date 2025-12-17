@@ -59,9 +59,11 @@ export default function SelecaoVacina() {
       setErro("Selecione qual vacina será aplicada.");
       return;
     }
+    const vacinasParaEnviar = listaVacinas.filter(v => selecionadas.includes(v._id));
+
     router.push({
       pathname: "./registro_dose",
-      params: { vacinas: JSON.stringify(selecionadas) },
+      params: { vacinas: JSON.stringify(vacinasParaEnviar) },
     });
   };
 

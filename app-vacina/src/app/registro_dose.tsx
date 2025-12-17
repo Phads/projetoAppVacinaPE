@@ -10,36 +10,96 @@ import {
     Platform,
     TouchableWithoutFeedback,
     Keyboard,
+    Alert,
 } from "react-native"
 import { Picker } from "@react-native-picker/picker"
 import React, { useState, useEffect } from "react"
 import { globalStyle } from "../../constants/globalStyles"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function FormRegistrarDoseAplicada() {
+    const params = useLocalSearchParams();
+    
+    // ESTADOS DE CONTROLE DO FLUXO
+    const [listaVacinas, setListaVacinas] = useState<any[]>([]);
+    const [indiceAtual, setIndiceAtual] = useState(0);
+    const [registrosProntos, setRegistrosProntos] = useState<any[]>([]);
 
-    const [selectedFabricante, setSelectedFabricante] = useState();
-    const [selectedDose, setSelectedDose] = useState();
-    const [selectedViaAplicacao, setSelectedViaAplicacao] = useState();
-    const [selectedLocalAplicacao, setSelectedLocalAplicacao] = useState();
+    // ESTADOS DO FORMULÁRIO (Inputs)
+    const [fabricante, setFabricante] = useState("");
+    const [dose, setDose] = useState("");
+    const [via, setVia] = useState("");
+    const [local, setLocal] = useState("");
+    const [obs, setObs] = useState("");
 
     const [dataAtual, setDataAtual] = useState("");
     const [horaAtual, setHoraAtual] = useState("");
 
     useEffect(() => {
+        if (params.vacinas) {
+            try {
+                const parsed = JSON.parse(params.vacinas as string);
+                setListaVacinas(parsed);
+            } catch (e) {
+                console.error("Erro ao ler vacinas", e);
+            }
+        }
+        
         const now = new Date();
         setDataAtual(now.toLocaleDateString('pt-BR'));
         setHoraAtual(now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
     }, []);
 
+    const vacinaAtual = listaVacinas[indiceAtual];
+    const isUltimaVacina = indiceAtual === listaVacinas.length - 1;
+
+    const handleProximo = () => {
+        if (!fabricante || !dose || !via) {
+            Alert.alert("Atenção", "Preencha Fabricante, Dose e Via de aplicação.");
+            return;
+        }
+
+        const registroAtual = {
+            vacinaId: vacinaAtual._id,
+            nomeVacina: vacinaAtual.nome, 
+            fabricante,
+            dose,
+            viaAplicacao: via,
+            localAplicacao: local,
+            observacoes: obs,
+            dataAplicacao: new Date().toISOString(), 
+        };
+
+        const novosRegistros = [...registrosProntos, registroAtual];
+        setRegistrosProntos(novosRegistros);
+
+        if (isUltimaVacina) {
+            console.log("Todos os registros:", novosRegistros);
+            
+            router.push({
+                pathname: '/revisao', 
+                params: { registros: JSON.stringify(novosRegistros) }
+            });
+        } else {
+            setIndiceAtual(indiceAtual + 1);
+            limparFormulario();
+        }
+    };
+
+    const limparFormulario = () => {
+        setFabricante("");
+        setDose("");
+        setVia("");
+        setLocal("");
+        setObs("");
+    };
+
+    if (!vacinaAtual) return null;
+
     return (
         <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
-            <StatusBar
-                barStyle={"light-content"}
-                backgroundColor={"#0a76e9"}
-                translucent={false}
-            />
+            <StatusBar barStyle={"light-content"} backgroundColor={"#0a76e9"} translucent={false} />
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
@@ -49,35 +109,54 @@ export default function FormRegistrarDoseAplicada() {
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <ScrollView
                         style={{ flex: 1 }}
-                        contentContainerStyle={{ flexGrow: 1, paddingBottom: 150 }}
+                        contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                     >
                         <View style={globalStyle.container}>
                             
                             <View style={globalStyle.header}>
-                                <Text style={globalStyle.headerTitle}>Vacina: Dados de aplicação</Text>
+                                <Text style={globalStyle.headerTitle}>Registrar Aplicação</Text>
                             </View>
 
+                            <View style={styles.progressContainer}>
+                                <Text style={styles.progressText}>
+                                    Vacina {indiceAtual + 1} de {listaVacinas.length}
+                                </Text>
+                                <View style={styles.progressBarBg}>
+                                    <View 
+                                        style={[
+                                            styles.progressBarFill, 
+                                            { width: `${((indiceAtual + 1) / listaVacinas.length) * 100}%` }
+                                        ]} 
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={styles.vacinaTitleCard}>
+                                <MaterialIcons name="vaccines" size={28} color="#0a76e9" />
+                                <Text style={styles.vacinaTitleText}>{vacinaAtual.nome}</Text>
+                            </View>
+
+                            {/* --- FORMULÁRIO --- */}
                             <View style={styles.inputWrapperLarge}>
                                 <Text style={styles.labelInside}>Fabricante *</Text>
                                 <Picker
-                                    selectedValue={selectedFabricante}
+                                    selectedValue={fabricante}
                                     style={styles.picker}
-                                    onValueChange={(itemValue) => setSelectedFabricante(itemValue)}
+                                    onValueChange={(itemValue) => setFabricante(itemValue)}
                                 >
                                     <Picker.Item label="Selecione uma opção" value="" color="#9CA3AF" />
                                     <Picker.Item label="Instituto Butantan" value="butantan" />
                                     <Picker.Item label="Fiocruz" value="fiocruz" />
-                                    <Picker.Item label="Pfizer / Wyeth" value="pfizer_wyeth" />
-                                    <Picker.Item label="AstraZeneca" value="astraz" />
+                                    <Picker.Item label="Pfizer / Wyeth" value="pfizer" />
+                                    <Picker.Item label="AstraZeneca" value="astrazeneca" />
                                     <Picker.Item label="Janssen" value="janssen" />
-                                    <Picker.Item label="Sanofi" value="sanofi" />
                                 </Picker>
                                 <View style={styles.divider} />
                                 <TouchableOpacity style={styles.scanButton}>
                                     <MaterialIcons name="qr-code-scanner" size={24} color="#0a76e9" />
-                                    <Text style={styles.scanButtonText}>Escanear Lote/Fabricante</Text>
+                                    <Text style={styles.scanButtonText}>Escanear Lote</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -85,49 +164,44 @@ export default function FormRegistrarDoseAplicada() {
                                 <View style={styles.inputWrapper}>
                                     <Text style={styles.labelInside}>Dose *</Text>
                                     <Picker
-                                        selectedValue={selectedDose}
+                                        selectedValue={dose}
                                         style={styles.picker}
-                                        onValueChange={(itemValue) => setSelectedDose(itemValue)}
+                                        onValueChange={(itemValue) => setDose(itemValue)}
                                     >
                                         <Picker.Item label="Selecione..." value="" color="#9CA3AF" />
-                                        <Picker.Item label="1ª Dose" value="d1" />
-                                        <Picker.Item label="2ª Dose" value="d2" />
-                                        <Picker.Item label="Dose Única" value="du" />
-                                        <Picker.Item label="1º Reforço" value="r1" />
-                                        <Picker.Item label="2º Reforço" value="r2" />
-                                        <Picker.Item label="Dose Adicional" value="da" />
+                                        <Picker.Item label="1ª Dose" value="D1" />
+                                        <Picker.Item label="2ª Dose" value="D2" />
+                                        <Picker.Item label="Dose Única" value="DU" />
+                                        <Picker.Item label="Reforço" value="R1" />
                                     </Picker>
                                 </View>
 
                                 <View style={styles.inputWrapper}>
                                     <Text style={styles.labelInside}>Via de Aplicação *</Text>
                                     <Picker
-                                        selectedValue={selectedViaAplicacao}
+                                        selectedValue={via}
                                         style={styles.picker}
-                                        onValueChange={(itemValue) => setSelectedViaAplicacao(itemValue)}
+                                        onValueChange={(itemValue) => setVia(itemValue)}
                                     >
                                         <Picker.Item label="Selecione..." value="" color="#9CA3AF" />
-                                        <Picker.Item label="Intramuscular (IM)" value="im" />
-                                        <Picker.Item label="Oral (VO)" value="vo" />
-                                        <Picker.Item label="Subcutânea" value="sc" />
-                                        <Picker.Item label="Intradérmica (ID)" value="id" />
+                                        <Picker.Item label="Intramuscular (IM)" value="IM" />
+                                        <Picker.Item label="Oral (VO)" value="VO" />
+                                        <Picker.Item label="Subcutânea" value="SC" />
                                     </Picker>
                                 </View>
 
                                 <View style={styles.inputWrapper}>
-                                    <Text style={styles.labelInside}>Local da aplicação</Text>
+                                    <Text style={styles.labelInside}>Local</Text>
                                     <Picker
-                                        selectedValue={selectedLocalAplicacao}
+                                        selectedValue={local}
                                         style={styles.picker}
-                                        onValueChange={(itemValue) => setSelectedLocalAplicacao(itemValue)}
+                                        onValueChange={(itemValue) => setLocal(itemValue)}
                                     >
-                                        <Picker.Item label="Selecione..." value="" color="#9CA3AF" />
-                                        <Picker.Item label="Braço Direito" value="braco_d" />
-                                        <Picker.Item label="Braço Esquerdo" value="braco_e" />
-                                        <Picker.Item label="Coxa Direita" value="coxa_d" />
-                                        <Picker.Item label="Coxa Esquerda" value="coxa_e" />
-                                        <Picker.Item label="Glúteo" value="gluteo" />
-                                        <Picker.Item label="Boca" value="boca" />
+                                        <Picker.Item label="Padrão/Não Espec." value="" color="#9CA3AF" />
+                                        <Picker.Item label="Braço Direito" value="BD" />
+                                        <Picker.Item label="Braço Esquerdo" value="BE" />
+                                        <Picker.Item label="Vasto Lateral D." value="VLD" />
+                                        <Picker.Item label="Vasto Lateral E." value="VLE" />
                                     </Picker>
                                 </View>
                             </View>
@@ -138,6 +212,8 @@ export default function FormRegistrarDoseAplicada() {
                                     placeholder="Anotações adicionais..."
                                     multiline={true}
                                     style={styles.textAreaInput} 
+                                    value={obs}
+                                    onChangeText={setObs}
                                 />
                             </View>
 
@@ -148,20 +224,18 @@ export default function FormRegistrarDoseAplicada() {
                                 </View>
                                 <View style={styles.autoInfoRow}>
                                     <Text style={styles.autoInfoLabel}>Data:</Text>
-                                    <Text style={styles.autoInfoValue}>{dataAtual}</Text>
-                                </View>
-                                <View style={styles.autoInfoRow}>
-                                    <Text style={styles.autoInfoLabel}>Horário:</Text>
-                                    <Text style={styles.autoInfoValue}>{horaAtual}</Text>
-                                </View>
-                                <View style={styles.autoInfoRow}>
-                                    <Text style={styles.autoInfoLabel}>Local:</Text>
-                                    <Text style={styles.autoInfoValue}>exemplo (Padrão)</Text>
+                                    <Text style={styles.autoInfoValue}>{dataAtual} às {horaAtual}</Text>
                                 </View>
                             </View>
 
-                            <TouchableOpacity style={globalStyle.button} activeOpacity={0.8} onPress={() => router.navigate('/revisao')}>
-                                <Text style={styles.buttonText}>Confirmar e avançar</Text>
+                            <TouchableOpacity 
+                                style={[globalStyle.button, isUltimaVacina ? {backgroundColor: '#059669'} : {}]} 
+                                activeOpacity={0.8} 
+                                onPress={handleProximo}
+                            >
+                                <Text style={styles.buttonText}>
+                                    {isUltimaVacina ? "Finalizar e Revisar" : "Próxima Vacina →"}
+                                </Text>
                             </TouchableOpacity>
 
                         </View>
@@ -173,112 +247,151 @@ export default function FormRegistrarDoseAplicada() {
 }
 
 const styles = StyleSheet.create({
-    inputContainer: {
-        flexDirection: "column",
-        gap: 16,
+    progressContainer: {
         marginBottom: 16,
+        paddingHorizontal: 4
     },
-    inputWrapper: {
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#D1D5DB',
-        borderRadius: 8,
-        paddingTop: 8,
-        height: 75,
-        justifyContent: 'center',
+    progressText: {
+        fontSize: 14,
+        color: '#4B5563',
+        marginBottom: 6,
+        fontWeight: '600'
     },
-    inputWrapperLarge: {
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#D1D5DB',
-        borderRadius: 8,
-        paddingTop: 8,
-        marginBottom: 16,
-        marginTop: 10,
-    },
-    labelInside: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#6B7280',
-        marginLeft: 14,
-        marginBottom: -8,
-        zIndex: 1,
-    },
-    picker: {
-        width: '100%',
-        color: '#111827',
-    },
-    divider: {
-        height: 1,
+    progressBarBg: {
+        height: 6,
         backgroundColor: '#E5E7EB',
-        marginHorizontal: 10,
+        borderRadius: 3,
+        overflow: 'hidden'
     },
-    scanButton: {
+    progressBarFill: {
+        height: '100%',
+        backgroundColor: '#0a76e9',
+        borderRadius: 3
+    },
+    vacinaTitleCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        backgroundColor: '#F0F9FF',
-        borderBottomLeftRadius: 8,
-        borderBottomRightRadius: 8,
-    },
-    scanButtonText: {
-        color: '#0a76e9',
-        fontWeight: 'bold',
-        marginLeft: 8,
-    },
-    textAreaWrapper: {
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#D1D5DB',
-        borderRadius: 8,
-        padding: 10,
-        height: 120,
-        marginBottom: 20,
-    },
-    textAreaInput: {
-        flex: 1,
-        textAlignVertical: 'top',
-        fontSize: 16,
-        marginTop: 5,
-    },
-    autoInfoCard: {
-        backgroundColor: '#E0F2FE',
-        borderRadius: 10,
+        backgroundColor: '#fff',
         padding: 16,
+        borderRadius: 10,
         marginBottom: 20,
-        borderWidth: 1,
-        borderColor: '#BAE6FD',
+        elevation: 1,
+        borderLeftWidth: 4,
+        borderLeftColor: '#0a76e9'
     },
-    autoInfoHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-        gap: 6,
-    },
-    autoInfoTitle: {
-        color: '#0369A1',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    autoInfoRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 4,
-    },
-    autoInfoLabel: {
-        color: '#525252',
-        fontWeight: '600',
-    },
-    autoInfoValue: {
-        color: '#000',
-        fontWeight: 'bold',
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
+    vacinaTitleText: {
         fontSize: 18,
-        textAlign: 'center',
-        paddingVertical: 14,
-    }
+        fontWeight: 'bold',
+        color: '#1F2937',
+        marginLeft: 10,
+        flex: 1
+    },
+    inputContainer: { 
+        flexDirection: "column", 
+        gap: 16, 
+        marginBottom: 16 
+    },
+    inputWrapper: { 
+        backgroundColor: '#FFFFFF', 
+        borderWidth: 1, 
+        borderColor: '#D1D5DB', 
+        borderRadius: 8, 
+        paddingTop: 8, 
+        height: 75, 
+        justifyContent: 'center' 
+    },
+    inputWrapperLarge: { 
+        backgroundColor: '#FFFFFF', 
+        borderWidth: 1, 
+        borderColor: '#D1D5DB', 
+        borderRadius: 8, 
+        paddingTop: 8, 
+        marginBottom: 16, 
+        marginTop: 10 
+    },
+    labelInside: { 
+        fontSize: 12,
+        fontWeight: 'bold', 
+        color: '#6B7280', 
+        marginLeft: 14, 
+        marginBottom: -8, 
+        zIndex: 1 
+    },
+    picker: { 
+        width: '100%', 
+        color: '#111827' 
+    },
+    divider: { 
+        height: 1, 
+        backgroundColor: '#E5E7EB', 
+        marginHorizontal: 10 
+    },
+    scanButton: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        paddingVertical: 12, 
+        backgroundColor: '#F0F9FF', 
+        borderBottomLeftRadius: 8, 
+        borderBottomRightRadius: 8 
+    },
+    scanButtonText: { 
+        color: '#0a76e9', 
+        fontWeight: 'bold', 
+        marginLeft: 8 
+    },
+    textAreaWrapper: { 
+        backgroundColor: '#FFFFFF', 
+        borderWidth: 1, 
+        borderColor: '#D1D5DB', 
+        borderRadius: 8, 
+        padding: 10, 
+        height: 120, 
+        marginBottom: 20 
+    },
+    textAreaInput: { 
+        flex: 1, 
+        textAlignVertical: 'top', 
+        fontSize: 16, 
+        marginTop: 5 
+    },
+    autoInfoCard: { 
+        backgroundColor: '#E0F2FE', 
+        borderRadius: 10, 
+        padding: 16, 
+        marginBottom: 20, 
+        borderWidth: 1, 
+        borderColor: '#BAE6FD' 
+    },
+    autoInfoHeader: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        marginBottom: 10, 
+        gap: 6 
+    },
+    autoInfoTitle: { 
+        color: '#0369A1', 
+        fontWeight: 'bold', 
+        fontSize: 16 
+    },
+    autoInfoRow: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        marginBottom: 4 
+    },
+    autoInfoLabel: { 
+        color: '#525252', 
+        fontWeight: '600' 
+    },
+    autoInfoValue: { 
+        color: '#000', 
+        fontWeight: 'bold' 
+    },
+    buttonText: { 
+        color: '#fff', 
+        fontWeight: 'bold', 
+        fontSize: 18, 
+        textAlign: 'center', 
+        paddingVertical: 14 
+    },
 });
