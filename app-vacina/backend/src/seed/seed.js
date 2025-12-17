@@ -92,7 +92,7 @@ async function seed() {
         nome: "INFLUENZA (GRIPE)",
         dose: "Dose Anual",
         tipo: "Campanha", 
-        status: "Disponivel",
+        status: "Aplicada",
         fabricante: "Butantan",
         lote: "INF2024-X",
         observacoes: "Campanha Nacional"
@@ -102,7 +102,7 @@ async function seed() {
         nome: "COVID-19 (MODERNA)",
         dose: "Reforço Bivalente",
         tipo: "Campanha",
-        status: "Disponivel",
+        status: "Pendente",
         fabricante: "Moderna",
         lote: "MOD-X55",
         observacoes: "Variante XBB 1.5"
@@ -112,7 +112,7 @@ async function seed() {
         nome: "DENGUE (QDENGA)",
         dose: "1ª Dose",
         tipo: "Campanha",
-        status: "Disponivel",
+        status: "Pendente",
         fabricante: "Takeda",
         lote: "DEN-001",
         observacoes: "Público alvo específico"
@@ -124,7 +124,7 @@ async function seed() {
         nome: "HEPATITE B",
         dose: "Dose Inicial/Reforço",
         tipo: "Rotina",
-        status: "Disponivel",
+        status: "Pendente",
         fabricante: "Butantan", 
         lote: "HEP-B22",
         observacoes: "Disponível"
@@ -134,7 +134,7 @@ async function seed() {
         nome: "DUPLA ADULTO (dT)",
         dose: "Reforço",
         tipo: "Rotina",
-        status: "Disponivel",
+        status: "Pendente",
         fabricante: "Fiocruz",
         lote: "DT-2025",
         observacoes: "Difteria e Tétano"
@@ -144,7 +144,7 @@ async function seed() {
         nome: "TRÍPLICE VIRAL",
         dose: "Dose Única",
         tipo: "Rotina",
-        status: "Disponivel",
+        status: "Aplicada",
         fabricante: "Fiocruz",
         observacoes: "Sarampo, Caxumba, Rubéola"
       },
@@ -153,7 +153,7 @@ async function seed() {
         nome: "FEBRE AMARELA",
         dose: "Dose Única",
         tipo: "Rotina",
-        status: "Disponivel",
+        status: "Aplicada",
         fabricante: "Bio-Manguinhos",
         observacoes: "Áreas de risco"
       },
@@ -162,7 +162,7 @@ async function seed() {
         nome: "HPV",
         dose: "Dose Única/Sequencial",
         tipo: "Rotina",
-        status: "Disponivel",
+        status: "Aplicada",
         fabricante: "Merck",
         observacoes: "Quadrivalente (6, 11, 16, 18)"
       },
@@ -171,7 +171,7 @@ async function seed() {
         nome: "MENINGOCÓCICA ACWY",
         dose: "Dose Única",
         tipo: "Especial",
-        status: "Disponivel",
+        status: "Pendente",
         fabricante: "Pfizer",
         observacoes: "CRIE / Adolescentes"
       },
@@ -180,7 +180,7 @@ async function seed() {
         nome: "PNEUMOCÓCICA 23",
         dose: "Reforço",
         tipo: "Especial",
-        status: "Disponivel",
+        status: "Aplicada",
         fabricante: "MSD",
         observacoes: "Pneumo 23 Valente"
       },
@@ -189,7 +189,7 @@ async function seed() {
         nome: "ANTIRRÁBICA",
         dose: "Profilaxia",
         tipo: "Especial",
-        status: "Disponivel",
+        status: "Pendente",
         fabricante: "Pasteur",
         observacoes: "Pós-exposição"
       }

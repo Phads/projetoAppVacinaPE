@@ -5,7 +5,7 @@ const VacinaSchema = new mongoose.Schema({
   nome: { type: String, required: true },
   dose: String,
   tipo: String,
-  status: { type: String, enum: ['Aplicada', 'Pendente', 'Disponivel'], default: 'Disponivel' },
+  status: { type: String, enum: ['Aplicada', 'Pendente',], default: 'Pendente' },
   fabricante: String,
   lote: String,
   dataAplicacao: Date,

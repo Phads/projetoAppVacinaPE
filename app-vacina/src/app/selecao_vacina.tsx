@@ -34,7 +34,7 @@ export default function SelecaoVacina() {
       const response = await api.get('/api/vacinas');
 
       const data = response.data;
-      const disponiveis = data.filter((v: any) => v.status === 'Disponivel');
+      const disponiveis = data.filter((v: any) => v.status === 'Pendente');
       setListaVacinas(disponiveis);
 
     } catch (error) {
