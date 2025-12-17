@@ -20,7 +20,7 @@ import { router, useLocalSearchParams } from "expo-router";
 
 export default function FormRegistrarDoseAplicada() {
     const params = useLocalSearchParams();
-    
+
     // ESTADOS DE CONTROLE DO FLUXO
     const [listaVacinas, setListaVacinas] = useState<any[]>([]);
     const [indiceAtual, setIndiceAtual] = useState(0);
@@ -45,7 +45,7 @@ export default function FormRegistrarDoseAplicada() {
                 console.error("Erro ao ler vacinas", e);
             }
         }
-        
+
         const now = new Date();
         setDataAtual(now.toLocaleDateString('pt-BR'));
         setHoraAtual(now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
@@ -62,13 +62,13 @@ export default function FormRegistrarDoseAplicada() {
 
         const registroAtual = {
             vacinaId: vacinaAtual._id,
-            nomeVacina: vacinaAtual.nome, 
+            nomeVacina: vacinaAtual.nome,
             fabricante,
             dose,
             viaAplicacao: via,
             localAplicacao: local,
             observacoes: obs,
-            dataAplicacao: new Date().toISOString(), 
+            dataAplicacao: new Date().toISOString(),
         };
 
         const novosRegistros = [...registrosProntos, registroAtual];
@@ -76,11 +76,12 @@ export default function FormRegistrarDoseAplicada() {
 
         if (isUltimaVacina) {
             console.log("Todos os registros:", novosRegistros);
-            
+
             router.push({
-                pathname: '/revisao', 
-                params: { registros: JSON.stringify(novosRegistros), 
-                cns: params.cns    
+                pathname: '/revisao',
+                params: {
+                    registros: JSON.stringify(novosRegistros),
+                    cns: params.cns
                 }
             });
         } else {
@@ -116,7 +117,7 @@ export default function FormRegistrarDoseAplicada() {
                         showsVerticalScrollIndicator={false}
                     >
                         <View style={globalStyle.container}>
-                            
+
                             <View style={globalStyle.header}>
                                 <Text style={globalStyle.headerTitle}>Registrar Aplicação</Text>
                             </View>
@@ -126,11 +127,11 @@ export default function FormRegistrarDoseAplicada() {
                                     Vacina {indiceAtual + 1} de {listaVacinas.length}
                                 </Text>
                                 <View style={styles.progressBarBg}>
-                                    <View 
+                                    <View
                                         style={[
-                                            styles.progressBarFill, 
+                                            styles.progressBarFill,
                                             { width: `${((indiceAtual + 1) / listaVacinas.length) * 100}%` }
-                                        ]} 
+                                        ]}
                                     />
                                 </View>
                             </View>
@@ -149,11 +150,11 @@ export default function FormRegistrarDoseAplicada() {
                                     onValueChange={(itemValue) => setFabricante(itemValue)}
                                 >
                                     <Picker.Item label="Selecione uma opção" value="" color="#9CA3AF" />
-                                    <Picker.Item label="Instituto Butantan" value="butantan" />
-                                    <Picker.Item label="Fiocruz" value="fiocruz" />
-                                    <Picker.Item label="Pfizer / Wyeth" value="pfizer" />
-                                    <Picker.Item label="AstraZeneca" value="astrazeneca" />
-                                    <Picker.Item label="Janssen" value="janssen" />
+                                    <Picker.Item label="Instituto Butantan" value="Butantan" />
+                                    <Picker.Item label="Fiocruz" value="Fiocruz" />
+                                    <Picker.Item label="Pfizer / Wyeth" value="Pfizer" />
+                                    <Picker.Item label="AstraZeneca" value="AstraZeneca" />
+                                    <Picker.Item label="Janssen" value="Janssen" />
                                 </Picker>
                                 <View style={styles.divider} />
                                 <TouchableOpacity style={styles.scanButton}>
@@ -171,10 +172,12 @@ export default function FormRegistrarDoseAplicada() {
                                         onValueChange={(itemValue) => setDose(itemValue)}
                                     >
                                         <Picker.Item label="Selecione..." value="" color="#9CA3AF" />
-                                        <Picker.Item label="1ª Dose" value="D1" />
-                                        <Picker.Item label="2ª Dose" value="D2" />
-                                        <Picker.Item label="Dose Única" value="DU" />
-                                        <Picker.Item label="Reforço" value="R1" />
+                                        <Picker.Item label="1ª Dose" value="1ª Dose" />
+                                        <Picker.Item label="2ª Dose" value="2ª Dose" />
+                                        <Picker.Item label="Dose Única" value="Dose Única" />
+                                        <Picker.Item label="1º Reforço" value="1º Reforço" />
+                                        <Picker.Item label="2º Reforço" value="2º Reforço" />
+                                        <Picker.Item label="Dose Adicional" value="Dose Adicional" />
                                     </Picker>
                                 </View>
 
@@ -186,9 +189,9 @@ export default function FormRegistrarDoseAplicada() {
                                         onValueChange={(itemValue) => setVia(itemValue)}
                                     >
                                         <Picker.Item label="Selecione..." value="" color="#9CA3AF" />
-                                        <Picker.Item label="Intramuscular (IM)" value="IM" />
-                                        <Picker.Item label="Oral (VO)" value="VO" />
-                                        <Picker.Item label="Subcutânea" value="SC" />
+                                        <Picker.Item label="Intramuscular (IM)" value="Intramuscular" />
+                                        <Picker.Item label="Oral (VO)" value="Oral" />
+                                        <Picker.Item label="Subcutânea (SC)" value="Subcutanea" />
                                     </Picker>
                                 </View>
 
@@ -199,11 +202,13 @@ export default function FormRegistrarDoseAplicada() {
                                         style={styles.picker}
                                         onValueChange={(itemValue) => setLocal(itemValue)}
                                     >
-                                        <Picker.Item label="Padrão/Não Espec." value="" color="#9CA3AF" />
-                                        <Picker.Item label="Braço Direito" value="BD" />
-                                        <Picker.Item label="Braço Esquerdo" value="BE" />
-                                        <Picker.Item label="Vasto Lateral D." value="VLD" />
-                                        <Picker.Item label="Vasto Lateral E." value="VLE" />
+                                        <Picker.Item label="Padrão/Não Espec." value="Padrao" color="#9CA3AF" />
+                                        {/* O erro dizia que 'BE' não servia. Use o texto completo */}
+                                        <Picker.Item label="Braço Direito" value="Braço Direito" />
+                                        <Picker.Item label="Braço Esquerdo" value="Braço Esquerdo" />
+                                        <Picker.Item label="Vasto Lateral D." value="Vasto Lateral Direito" />
+                                        <Picker.Item label="Vasto Lateral E." value="Vasto Lateral Esquerdo" />
+                                        <Picker.Item label="Glúteo" value="Glúteo" />
                                     </Picker>
                                 </View>
                             </View>
@@ -213,7 +218,7 @@ export default function FormRegistrarDoseAplicada() {
                                 <TextInput
                                     placeholder="Anotações adicionais..."
                                     multiline={true}
-                                    style={styles.textAreaInput} 
+                                    style={styles.textAreaInput}
                                     value={obs}
                                     onChangeText={setObs}
                                 />
@@ -230,9 +235,9 @@ export default function FormRegistrarDoseAplicada() {
                                 </View>
                             </View>
 
-                            <TouchableOpacity 
-                                style={[globalStyle.button, isUltimaVacina ? {backgroundColor: '#059669'} : {}]} 
-                                activeOpacity={0.8} 
+                            <TouchableOpacity
+                                style={[globalStyle.button, isUltimaVacina ? { backgroundColor: '#059669' } : {}]}
+                                activeOpacity={0.8}
                                 onPress={handleProximo}
                             >
                                 <Text style={styles.buttonText}>
@@ -288,112 +293,112 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         flex: 1
     },
-    inputContainer: { 
-        flexDirection: "column", 
-        gap: 16, 
-        marginBottom: 16 
+    inputContainer: {
+        flexDirection: "column",
+        gap: 16,
+        marginBottom: 16
     },
-    inputWrapper: { 
-        backgroundColor: '#FFFFFF', 
-        borderWidth: 1, 
-        borderColor: '#D1D5DB', 
-        borderRadius: 8, 
-        paddingTop: 8, 
-        height: 75, 
-        justifyContent: 'center' 
+    inputWrapper: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#D1D5DB',
+        borderRadius: 8,
+        paddingTop: 8,
+        height: 75,
+        justifyContent: 'center'
     },
-    inputWrapperLarge: { 
-        backgroundColor: '#FFFFFF', 
-        borderWidth: 1, 
-        borderColor: '#D1D5DB', 
-        borderRadius: 8, 
-        paddingTop: 8, 
-        marginBottom: 16, 
-        marginTop: 10 
+    inputWrapperLarge: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#D1D5DB',
+        borderRadius: 8,
+        paddingTop: 8,
+        marginBottom: 16,
+        marginTop: 10
     },
-    labelInside: { 
+    labelInside: {
         fontSize: 12,
-        fontWeight: 'bold', 
-        color: '#6B7280', 
-        marginLeft: 14, 
-        marginBottom: -8, 
-        zIndex: 1 
+        fontWeight: 'bold',
+        color: '#6B7280',
+        marginLeft: 14,
+        marginBottom: -8,
+        zIndex: 1
     },
-    picker: { 
-        width: '100%', 
-        color: '#111827' 
+    picker: {
+        width: '100%',
+        color: '#111827'
     },
-    divider: { 
-        height: 1, 
-        backgroundColor: '#E5E7EB', 
-        marginHorizontal: 10 
+    divider: {
+        height: 1,
+        backgroundColor: '#E5E7EB',
+        marginHorizontal: 10
     },
-    scanButton: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        paddingVertical: 12, 
-        backgroundColor: '#F0F9FF', 
-        borderBottomLeftRadius: 8, 
-        borderBottomRightRadius: 8 
+    scanButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        backgroundColor: '#F0F9FF',
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8
     },
-    scanButtonText: { 
-        color: '#0a76e9', 
-        fontWeight: 'bold', 
-        marginLeft: 8 
+    scanButtonText: {
+        color: '#0a76e9',
+        fontWeight: 'bold',
+        marginLeft: 8
     },
-    textAreaWrapper: { 
-        backgroundColor: '#FFFFFF', 
-        borderWidth: 1, 
-        borderColor: '#D1D5DB', 
-        borderRadius: 8, 
-        padding: 10, 
-        height: 120, 
-        marginBottom: 20 
+    textAreaWrapper: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#D1D5DB',
+        borderRadius: 8,
+        padding: 10,
+        height: 120,
+        marginBottom: 20
     },
-    textAreaInput: { 
-        flex: 1, 
-        textAlignVertical: 'top', 
-        fontSize: 16, 
-        marginTop: 5 
+    textAreaInput: {
+        flex: 1,
+        textAlignVertical: 'top',
+        fontSize: 16,
+        marginTop: 5
     },
-    autoInfoCard: { 
-        backgroundColor: '#E0F2FE', 
-        borderRadius: 10, 
-        padding: 16, 
-        marginBottom: 20, 
-        borderWidth: 1, 
-        borderColor: '#BAE6FD' 
+    autoInfoCard: {
+        backgroundColor: '#E0F2FE',
+        borderRadius: 10,
+        padding: 16,
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#BAE6FD'
     },
-    autoInfoHeader: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        marginBottom: 10, 
-        gap: 6 
+    autoInfoHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+        gap: 6
     },
-    autoInfoTitle: { 
-        color: '#0369A1', 
-        fontWeight: 'bold', 
-        fontSize: 16 
+    autoInfoTitle: {
+        color: '#0369A1',
+        fontWeight: 'bold',
+        fontSize: 16
     },
-    autoInfoRow: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        marginBottom: 4 
+    autoInfoRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 4
     },
-    autoInfoLabel: { 
-        color: '#525252', 
-        fontWeight: '600' 
+    autoInfoLabel: {
+        color: '#525252',
+        fontWeight: '600'
     },
-    autoInfoValue: { 
-        color: '#000', 
-        fontWeight: 'bold' 
+    autoInfoValue: {
+        color: '#000',
+        fontWeight: 'bold'
     },
-    buttonText: { 
-        color: '#fff', 
-        fontWeight: 'bold', 
-        fontSize: 18, 
-        textAlign: 'center', 
-        paddingVertical: 14 
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center',
+        paddingVertical: 14
     },
 });

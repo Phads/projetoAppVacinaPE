@@ -8,9 +8,9 @@ const AplicacaoSchema = new mongoose.Schema({
   fabricante: {
     type: String,
     enum: [
-      'Instituto Butantan',
+      'Butantan',
       'Fiocruz',
-      'Pfizer/Wyeth',
+      'Pfizer',
       'AstraZeneca',
       'Janssen',
       'Sanofi'
@@ -20,18 +20,36 @@ const AplicacaoSchema = new mongoose.Schema({
   doseAplicada: {
     type: String,
     enum: [
-      '1ª', '2ª', '3ª',
-      '1º reforço', '2º reforço',
-      'dose única', 'dose adicional'
+      '1ª Dose',
+      '2ª Dose',
+      '3ª Dose',
+      '1º Reforço',
+      '2º Reforço',
+      'Dose Única',
+      'Dose Adicional'
+    ]
+  },
+
+  viaAplicacao: {
+    type: String,
+    enum: [
+        'Intramuscular',
+        'Oral',
+        'Subcutanea',
+        'Intradermica'
     ]
   },
 
   localAplicacao: {
     type: String,
     enum: [
-      'braço direito', 'braço esquerdo',
-      'coxa direita', 'coxa esquerda',
-      'glúteo', 'boca'
+      'Braço Direito',
+      'Braço Esquerdo',
+      'Vasto Lateral Direito', 
+      'Vasto Lateral Esquerdo',
+      'Glúteo',
+      'Boca',
+      'Padrao' 
     ]
   },
 
